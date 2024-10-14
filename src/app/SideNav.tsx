@@ -1,7 +1,11 @@
+'use client';
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
 
 export default function SideNav() {
+  const pathname = usePathname(); // Get the current pathname to determine which link is active
   return (
     <aside
       id="default-sidebar"
@@ -9,7 +13,7 @@ export default function SideNav() {
       aria-label="Sidebar"
     >
       <div className="h-full overflow-y-auto bg-gray-50 px-3 py-4 dark:bg-gray-800">
-        <div className="mb-4 flex justify-center">
+        <div className="w-20 m-4 flex justify-center">
           <Image
             src="/itc.jpeg"
             alt="ITC Logo"
@@ -22,10 +26,20 @@ export default function SideNav() {
           <li>
             <Link
               href="/procurement"
-              className="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+              className={clsx(
+                'group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700',
+                {
+                  'bg-gray-200 dark:bg-gray-700': pathname === '/procurement',
+                },
+              )}
             >
               <svg
-                className="h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                className={clsx(
+                  "h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white",
+                  {
+                    'text-gray-900 dark:text-white': pathname === '/procurement',
+                  },
+                )}
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -40,10 +54,20 @@ export default function SideNav() {
           <li>
             <Link
               href="/insight"
-              className="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+              className={clsx(
+                'group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700',
+                {
+                  'bg-gray-200 dark:bg-gray-700': pathname === '/insight',
+                },
+              )}
             >
               <svg
-                className="h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                className={clsx(
+                  "h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white",
+                  {
+                    'text-gray-900 dark:text-white': pathname === '/insight',
+                  },
+                )}
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -58,10 +82,20 @@ export default function SideNav() {
           <li>
             <Link
               href="/profile"
-              className="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+              className={clsx(
+                'group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700',
+                {
+                  'bg-gray-200 dark:bg-gray-700': pathname === '/profile',
+                },
+              )}
             >
               <svg
-                className="h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                className={clsx(
+                  "h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white",
+                  {
+                    'text-gray-900 dark:text-white': pathname === '/profile',
+                  },
+                )}
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
