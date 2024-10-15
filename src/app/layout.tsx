@@ -2,7 +2,7 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-import SideNav from "./SideNav";
+import SideNav from "./side-nav";
 
 export const metadata: Metadata = {
   title: "Indigenous Business Intelligence",
@@ -16,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <SideNav />
-        {children}
+        <div className="grid h-full grid-cols-[16rem_1fr]">
+          <SideNav />
+          <main className="p-4 overflow-y-auto">{children}</main>
+        </div>
       </body>
     </html>
   );
