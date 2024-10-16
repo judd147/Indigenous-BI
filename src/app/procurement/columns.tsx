@@ -10,10 +10,10 @@ export type Procurement = {
   vendor_name: string
   economic_object_code: number
   contract_value: number
-  commodity_type: string
-  solicitation_procedure_code: string
-  procurement_strategy_code: string
-  award_criteria_code: string
+  commodity_type: string // "service" | "goods"
+  solicitation_procedure_code: string // "competitive" | "non-competitive"
+  procurement_strategy_code: string // "None" | "Strategic" | "Non-Strategic"
+  award_criteria_code: string // "lowest price" | "highest price" | "fair value" | "quality"
 }
 
 export const columns: ColumnDef<Procurement>[] = [
