@@ -2,13 +2,19 @@
 
 ## TODO
 [x] Sidebar and navigation
-[ ] Scaffold basic UI with mock data
-    [ ] Procurement data table
-    [ ] Insight charts
-    [ ] Profile user info form
+
+[x] Scaffold basic UI
+
 [ ] Set up a real database
-[ ] Attach database to UI
-[ ] Add authentication
-[ ] Routing
+
+[ ] Procurement data table
+
+[ ] Insight charts
+    
+[ ] Profile user info form
+
 [ ] CRUD operations (React Query & server actions)
+
+[ ] Add authentication
+
 [ ] Deploy and other Fancy stuff
