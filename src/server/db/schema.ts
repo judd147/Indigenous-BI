@@ -1,36 +1,52 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
-
-import { sql } from "drizzle-orm";
 import {
-  index,
   pgTableCreator,
   serial,
-  timestamp,
+  integer,
   varchar,
+  boolean,
 } from "drizzle-orm/pg-core";
 
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
 export const createTable = pgTableCreator((name) => `indigenous-bi_${name}`);
 
-export const posts = createTable(
-  "post",
+export const vendor = createTable('vendor', {
+  vendor_name: varchar('vendor_name', { length: 256 }).primaryKey(),
+  is_IB: boolean('is_IB').default(false),
+});
+
+export const solicitationProcedure = createTable('solicitation_procedure', {
+  id: serial('id').primaryKey(),
+  procedure: varchar('procedure', { length: 256 }),
+});
+
+export const awardCriteria = createTable('award_criteria', {
+  id: serial('id').primaryKey(),
+  criteria: varchar('criteria', { length: 256 }),
+});
+
+export const procurementStrategy = createTable('procurement_strategy', {
+  id: serial('id').primaryKey(),
+  strategy: varchar('strategy', { length: 256 }),
+});
+
+export const department = createTable('department', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 256 }),
+});
+
+export const procurement = createTable(
+  "procurement",
   {
-    id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
-    ),
-  },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
+    procurement_id: integer("procurement_id").primaryKey(),
+    vendor_name: varchar("vendor_name", { length: 256 }),
+    date: varchar("date", { length: 256 }),
+    economic_object_code: varchar("economic_object_code", { length: 256 }),
+    description: varchar("description"),
+    contract_value: integer("contract_value"),
+    commodity_type: varchar("commodity_type", { length: 256 }),
+    solicitation_procedure_id: integer("solicitation_procedure_id").references(() => solicitationProcedure.id),
+    department_id: integer("department_id").references(() => department.id),
+    procurement_strategy_id: integer("procurement_strategy_id").references(() => procurementStrategy.id),
+    award_criteria_id: integer("award_criteria_id").references(() => awardCriteria.id),
+    is_Tech: boolean("is_Tech").default(false),
+  }
 );
