@@ -1,6 +1,7 @@
 import {
   pgTableCreator,
   serial,
+  real,
   integer,
   varchar,
   boolean,
@@ -15,33 +16,33 @@ export const vendor = createTable('vendor', {
 
 export const solicitationProcedure = createTable('solicitation_procedure', {
   id: serial('id').primaryKey(),
-  procedure: varchar('procedure', { length: 256 }),
+  procedure: varchar('procedure', { length: 256 }).unique(),
 });
 
 export const awardCriteria = createTable('award_criteria', {
   id: serial('id').primaryKey(),
-  criteria: varchar('criteria', { length: 256 }),
+  criteria: varchar('criteria', { length: 256 }).unique(),
 });
 
 export const procurementStrategy = createTable('procurement_strategy', {
   id: serial('id').primaryKey(),
-  strategy: varchar('strategy', { length: 256 }),
+  strategy: varchar('strategy', { length: 256 }).unique(),
 });
 
 export const department = createTable('department', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 256 }),
+  name: varchar('name', { length: 256 }).unique(),
 });
 
 export const procurement = createTable(
   "procurement",
   {
-    procurement_id: integer("procurement_id").primaryKey(),
+    id: integer('id').primaryKey(),
     vendor_name: varchar("vendor_name", { length: 256 }).references(() => vendor.vendor_name),
     date: varchar("date", { length: 256 }),
     economic_object_code: varchar("economic_object_code", { length: 256 }),
     description: varchar("description"),
-    contract_value: integer("contract_value"),
+    contract_value: real("contract_value"),
     commodity_type: varchar("commodity_type", { length: 256 }),
     solicitation_procedure_id: integer("solicitation_procedure_id").references(() => solicitationProcedure.id),
     department_id: integer("department_id").references(() => department.id),

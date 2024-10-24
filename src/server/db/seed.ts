@@ -10,6 +10,12 @@ import {
   department,
   procurement,
 } from "./schema.js";
+import pkg from '@next/env'
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const { loadEnvConfig } = pkg;
+const projectDir = process.cwd()
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+loadEnvConfig(projectDir)
 
 interface ProcurementRecord {
   procurement_id: number;
@@ -26,6 +32,7 @@ interface ProcurementRecord {
   PSIB: string;
   is_Tech: boolean;
 }
+let index = 20601;
 
 const seed = async () => {
   const data = fs.readFileSync(
@@ -33,56 +40,57 @@ const seed = async () => {
     "utf8",
   );
   const records: ProcurementRecord[] = Papa.parse<ProcurementRecord>(data, { header: true, dynamicTyping: true }).data;
-  for (const record of records) {
+
+  for (const record of records.slice(index)) {
     // vendor table
-    const existingVendor = await db.select().from(vendor).where(
-      eq(vendor.vendor_name, record.vendor_name),
-    );
-    if (existingVendor.length === 0) {
-      await db
-      .insert(vendor)
-      .values({ vendor_name: record.vendor_name, is_IB: record.is_IB });
-    }
-    
+    // const existingVendor = await db.select().from(vendor).where(
+    //   eq(vendor.vendor_name, record.vendor_name),
+    // );
+
+    await db
+    .insert(vendor)
+    .values({ vendor_name: record.vendor_name, is_IB: record.is_IB })
+    .onConflictDoNothing({ target: vendor.vendor_name });
+
     // solicitation procedure table
-    const existingProcedure = await db.select().from(solicitationProcedure).where(
-      eq(solicitationProcedure.procedure, record.solicitation_procedure_en),
-    );
-    if (existingProcedure.length === 0) {
-      await db
-        .insert(solicitationProcedure)
-        .values({ procedure: record.solicitation_procedure_en });
-    }
+    // const existingProcedure = await db.select().from(solicitationProcedure).where(
+    //   eq(solicitationProcedure.procedure, record.solicitation_procedure_en),
+    // );
+    
+    await db
+      .insert(solicitationProcedure)
+      .values({ procedure: record.solicitation_procedure_en })
+      .onConflictDoNothing({ target: solicitationProcedure.procedure });
 
     // department table
-    const existingDepartment = await db.select().from(department).where(
-      eq(department.name, record.owner_org_en),
-    );
-    if (existingDepartment.length === 0) {
-      await db
-        .insert(department)
-        .values({ name: record.owner_org_en });
-    }
+    // const existingDepartment = await db.select().from(department).where(
+    //   eq(department.name, record.owner_org_en),
+    // );
+  
+    await db
+      .insert(department)
+      .values({ name: record.owner_org_en })
+      .onConflictDoNothing({ target: department.name });
 
     // award criteria table
-    const existingAwardCriteria = await db.select().from(awardCriteria).where(
-      eq(awardCriteria.criteria, record.award_criteria_en),
-    );
-    if (existingAwardCriteria.length === 0) {
-      await db
-        .insert(awardCriteria)
-        .values({ criteria: record.award_criteria_en });
-    }
+    // const existingAwardCriteria = await db.select().from(awardCriteria).where(
+    //   eq(awardCriteria.criteria, record.award_criteria_en),
+    // );
+    
+    await db
+      .insert(awardCriteria)
+      .values({ criteria: record.award_criteria_en })
+      .onConflictDoNothing({ target: awardCriteria.criteria });
 
     // procurement strategy table
-    const existingStrategy = await db.select().from(procurementStrategy).where(
-      eq(procurementStrategy.strategy, record.PSIB),
-    );
-    if (existingStrategy.length === 0) {
-      await db
-        .insert(procurementStrategy)
-        .values({ strategy: record.PSIB });
-    }
+    // const existingStrategy = await db.select().from(procurementStrategy).where(
+    //   eq(procurementStrategy.strategy, record.PSIB),
+    // );
+    
+    await db
+      .insert(procurementStrategy)
+      .values({ strategy: record.PSIB })
+      .onConflictDoNothing({ target: procurementStrategy.strategy });
 
     // procurement table
     // fetch all foreign keys
@@ -98,7 +106,7 @@ const seed = async () => {
     const awardCriteriaFK = await db.select({id: awardCriteria.id}).from(awardCriteria).where(
       eq(awardCriteria.criteria, record.award_criteria_en),
     );
-    
+
     if (!procedureFK[0]) {
       throw new Error(`Solicitation procedure not found for record ${record.solicitation_procedure_en}`);
     }
@@ -112,7 +120,7 @@ const seed = async () => {
       throw new Error(`Award criteria not found for record ${record.award_criteria_en}`);
     }
     await db.insert(procurement).values({
-      procurement_id: record.procurement_id,
+      id: index,
       vendor_name: record.vendor_name,
       date: record.contract_date,
       economic_object_code: record.economic_object_code,
@@ -125,6 +133,10 @@ const seed = async () => {
       award_criteria_id: awardCriteriaFK[0].id,
       is_Tech: record.is_Tech,
     });
+    index++;
+    if (index % 2000 === 0) {
+      console.log(`Processed ${index} records`);
+    }
   }
 };
 
