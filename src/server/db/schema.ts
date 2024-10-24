@@ -37,7 +37,7 @@ export const procurement = createTable(
   "procurement",
   {
     procurement_id: integer("procurement_id").primaryKey(),
-    vendor_name: varchar("vendor_name", { length: 256 }),
+    vendor_name: varchar("vendor_name", { length: 256 }).references(() => vendor.vendor_name),
     date: varchar("date", { length: 256 }),
     economic_object_code: varchar("economic_object_code", { length: 256 }),
     description: varchar("description"),
