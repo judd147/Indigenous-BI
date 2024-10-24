@@ -13,6 +13,7 @@ export default function ProcurementPage() {
     procurement_strategy_code: "None",
     award_criteria_code: "lowest price"
   }]
+  
   return (
     <div className="container px-8 py-16">
       <p className="text-4xl font-bold">Procurement Page</p>
