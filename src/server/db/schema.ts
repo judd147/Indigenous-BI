@@ -6,6 +6,7 @@ import {
   varchar,
   boolean,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const createTable = pgTableCreator((name) => `indigenous-bi_${name}`);
 
@@ -14,25 +15,45 @@ export const vendor = createTable('vendor', {
   is_IB: boolean('is_IB').default(false),
 });
 
+export const vendorRelations = relations(vendor, ({ many }) => ({
+  procurements: many(procurement),
+}));
+
 export const solicitationProcedure = createTable('solicitation_procedure', {
   id: serial('id').primaryKey(),
   procedure: varchar('procedure', { length: 256 }).unique(),
 });
+
+export const solicitationProcedureRelations = relations(solicitationProcedure, ({ many }) => ({
+  procurements: many(procurement),
+}));
 
 export const awardCriteria = createTable('award_criteria', {
   id: serial('id').primaryKey(),
   criteria: varchar('criteria', { length: 256 }).unique(),
 });
 
+export const awardCriteriaRelations = relations(awardCriteria, ({ many }) => ({
+  procurements: many(procurement),
+}));
+
 export const procurementStrategy = createTable('procurement_strategy', {
   id: serial('id').primaryKey(),
   strategy: varchar('strategy', { length: 256 }).unique(),
 });
 
+export const procurementStrategyRelations = relations(procurementStrategy, ({ many }) => ({
+  procurements: many(procurement),
+}));
+
 export const department = createTable('department', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 256 }).unique(),
 });
+
+export const departmentRelations = relations(department, ({ many }) => ({
+  procurements: many(procurement),
+}));
 
 export const procurement = createTable(
   "procurement",
@@ -51,3 +72,26 @@ export const procurement = createTable(
     is_Tech: boolean("is_Tech").default(false),
   }
 );
+
+export const procurementRelations = relations(procurement, ({ one }) => ({
+  vendor: one(vendor, {
+    fields: [procurement.vendor_name],
+    references: [vendor.vendor_name],
+  }),
+  solicitationProcedure: one(solicitationProcedure, {
+    fields: [procurement.solicitation_procedure_id],
+    references: [solicitationProcedure.id],
+  }),
+  department: one(department, {
+    fields: [procurement.department_id],
+    references: [department.id],
+  }),
+  procurementStrategy: one(procurementStrategy, {
+    fields: [procurement.procurement_strategy_id],
+    references: [procurementStrategy.id],
+  }),
+  awardCriteria: one(awardCriteria, {
+    fields: [procurement.award_criteria_id],
+    references: [awardCriteria.id],
+  }),
+}));

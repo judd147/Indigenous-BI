@@ -2,7 +2,7 @@ import * as fs from "fs";
 import Papa from "papaparse";
 import { eq } from 'drizzle-orm';
 import { db } from "./index.js";
-import {
+import { 
   vendor,
   solicitationProcedure,
   awardCriteria,
@@ -32,7 +32,7 @@ interface ProcurementRecord {
   PSIB: string;
   is_Tech: boolean;
 }
-let index = 20601;
+let index = 48994;
 
 const seed = async () => {
   const data = fs.readFileSync(
