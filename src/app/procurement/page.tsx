@@ -3,23 +3,8 @@ import { DataTable } from "./data-table"
 import { db } from "../../server/db/index"
 
 export default async function ProcurementPage() {
-  // const data: Procurement[] = [{
-  //   id: 1,
-  //   vendor_name: 'vendor',
-  //   date: new Date().toLocaleDateString(),
-  //   economic_object_code: '123',
-  //   description: 'description',
-  //   contract_value: 456,
-  //   commodity_type: "service",
-  //   solicitation_procedure: "competitive",
-  //   department: "department",
-  //   procurement_strategy: "None",
-  //   award_criteria: "lowest price",
-  //   is_Tech: true,
-  // }];
-
   const procurements = await db.query.procurement.findMany({
-    limit: 1,
+    limit: 50,
     with: {
       solicitationProcedure: {
         columns: {
@@ -44,7 +29,7 @@ export default async function ProcurementPage() {
     }
   }) as Procurement[];
 
-  console.log(procurements);
+  // console.log(procurements);
   
   return (
     <div className="container px-8 py-16">

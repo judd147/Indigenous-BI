@@ -50,7 +50,16 @@ export const columns: ColumnDef<Procurement>[] = [
   },
   {
     accessorKey: "contract_value",
-    header: "Contract Value",
+    header: () => <div className="text-right">Contract Value</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("contract_value"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "CAD",
+      }).format(amount)
+ 
+      return <div className="text-right font-medium">{formatted}</div>
+    },
   },
   {
     accessorKey: "commodity_type",
