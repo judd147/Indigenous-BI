@@ -41,6 +41,11 @@ export const columns: ColumnDef<Procurement>[] = [
   {
     accessorKey: "date",
     header: "Date",
+    cell: ({ row }) => {
+      const date: string = row.getValue("date")
+      const formatted = date.slice(0,10)
+      return <div>{formatted}</div>
+    },
   },
   {
     accessorKey: "economic_object_code",
@@ -70,7 +75,7 @@ export const columns: ColumnDef<Procurement>[] = [
         currency: "CAD",
       }).format(amount)
  
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-center font-medium">{formatted}</div>
     },
   },
   {
