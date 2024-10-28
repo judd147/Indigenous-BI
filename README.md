@@ -14,9 +14,10 @@
   - [ ] Add summary tables
 - [x] Procurement data table
   - [x] Pagination
-  - [ ] Sorting
-  - [ ] Filtering
-  - [ ] Column visibility
+  - [x] Sorting
+  - [x] Filtering
+  - [x] Column visibility
+  - [x] Use reusable components
 - [ ] Insight charts
 - [ ] Profile user info form
 - [ ] Add authentication

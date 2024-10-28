@@ -1,8 +1,7 @@
 "use client";
 
 import { type ColumnDef } from "@tanstack/react-table";
-import { Button } from "../../components/ui/button"
-import { ArrowUpDown } from "lucide-react"
+import { ColumnHeader } from "./column-header";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -36,11 +35,15 @@ export type Procurement = {
 export const columns: ColumnDef<Procurement>[] = [
   {
     accessorKey: "vendor_name",
-    header: "Vendor",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Vendor" />
+    ),
   },
   {
     accessorKey: "date",
-    header: "Date",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Date" />
+    ),
     cell: ({ row }) => {
       const date: string = row.getValue("date")
       const formatted = date.slice(0,10)
@@ -49,24 +52,20 @@ export const columns: ColumnDef<Procurement>[] = [
   },
   {
     accessorKey: "economic_object_code",
-    header: "Economic Object Code",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Economic Object Code" />
+    ),
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Description" />
+    ),
   },
   {
     accessorKey: "contract_value",
     header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Contract Value
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
+      return <ColumnHeader column={column} title="Contract Value" />
     },
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("contract_value"))
@@ -80,26 +79,38 @@ export const columns: ColumnDef<Procurement>[] = [
   },
   {
     accessorKey: "commodity_type",
-    header: "Commodity Type",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Commodity Type" />
+    ),
   },
   {
     accessorKey: "solicitationProcedure.procedure",
-    header: "Solicitation Procedure",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Solicitation Procedure" />
+    ),
   },
   {
     accessorKey: "department.name",
-    header: "Department",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Department" />
+    ),
   },
   {
     accessorKey: "procurementStrategy.strategy",
-    header: "Procurement Strategy",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Procurement Strategy" />
+    ),
   },
   {
     accessorKey: "awardCriteria.criteria",
-    header: "Award Criteria",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Award Criteria" />
+    ),
   },
   {
     accessorKey: "is_Tech",
-    header: "Is Tech",
+    header: ({ column }) => (
+      <ColumnHeader column={column} title="Is Tech" />
+    ),
   }
 ];
