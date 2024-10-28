@@ -2,7 +2,7 @@ import * as fs from "fs";
 import Papa from "papaparse";
 import { eq } from 'drizzle-orm';
 import { db } from "./index.js";
-import {
+import { 
   vendor,
   solicitationProcedure,
   awardCriteria,
@@ -32,7 +32,7 @@ interface ProcurementRecord {
   PSIB: string;
   is_Tech: boolean;
 }
-let index = 20601;
+let index = 0;
 
 const seed = async () => {
   const data = fs.readFileSync(
@@ -42,57 +42,31 @@ const seed = async () => {
   const records: ProcurementRecord[] = Papa.parse<ProcurementRecord>(data, { header: true, dynamicTyping: true }).data;
 
   for (const record of records.slice(index)) {
-    // vendor table
-    // const existingVendor = await db.select().from(vendor).where(
-    //   eq(vendor.vendor_name, record.vendor_name),
-    // );
-
     await db
     .insert(vendor)
     .values({ vendor_name: record.vendor_name, is_IB: record.is_IB })
     .onConflictDoNothing({ target: vendor.vendor_name });
-
-    // solicitation procedure table
-    // const existingProcedure = await db.select().from(solicitationProcedure).where(
-    //   eq(solicitationProcedure.procedure, record.solicitation_procedure_en),
-    // );
     
     await db
       .insert(solicitationProcedure)
       .values({ procedure: record.solicitation_procedure_en })
       .onConflictDoNothing({ target: solicitationProcedure.procedure });
 
-    // department table
-    // const existingDepartment = await db.select().from(department).where(
-    //   eq(department.name, record.owner_org_en),
-    // );
-  
     await db
       .insert(department)
       .values({ name: record.owner_org_en })
       .onConflictDoNothing({ target: department.name });
 
-    // award criteria table
-    // const existingAwardCriteria = await db.select().from(awardCriteria).where(
-    //   eq(awardCriteria.criteria, record.award_criteria_en),
-    // );
-    
     await db
       .insert(awardCriteria)
       .values({ criteria: record.award_criteria_en })
       .onConflictDoNothing({ target: awardCriteria.criteria });
 
-    // procurement strategy table
-    // const existingStrategy = await db.select().from(procurementStrategy).where(
-    //   eq(procurementStrategy.strategy, record.PSIB),
-    // );
-    
     await db
       .insert(procurementStrategy)
       .values({ strategy: record.PSIB })
       .onConflictDoNothing({ target: procurementStrategy.strategy });
 
-    // procurement table
     // fetch all foreign keys
     const procedureFK = await db.select({id: solicitationProcedure.id}).from(solicitationProcedure).where(
       eq(solicitationProcedure.procedure, record.solicitation_procedure_en),
