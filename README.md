@@ -11,14 +11,15 @@
   - [x] Create tables
   - [x] Create relations
   - [x] Seed data from CSV to Vercel Postgres
-  - [ ] Add summary tables
 - [x] Procurement data table
   - [x] Pagination
   - [x] Sorting
   - [x] Filtering
   - [x] Column visibility
   - [x] Use reusable components
+  - [ ] Global search
 - [ ] Insight charts
+  - [ ] Add summary tables
 - [ ] Profile user info form
 - [ ] Add authentication
 - [ ] Deploy

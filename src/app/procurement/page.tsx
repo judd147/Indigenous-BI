@@ -1,6 +1,6 @@
 import { type Procurement, columns } from "./columns"
 import { DataTable } from "./data-table"
-import { db } from "../../server/db/index"
+import { db } from "~/server/db/index"
 
 export default async function ProcurementPage() {
   const procurements = await db.query.procurement.findMany({
