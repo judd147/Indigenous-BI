@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { Label, Pie, PieChart } from "recharts";
+import { type ChartData }  from "~/app/insight/page";
+import { ChartLegend, ChartLegendContent } from "~/components/ui/chart";
 
 import {
   Card,
@@ -12,18 +14,20 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/ui/chart";
 
 type DonutPieChartProps = {
-  chartData: { category: string; count: number; pct: number; fill: string }[];
+  chartData: ChartData[];
   chartConfig: ChartConfig;
   chartTitle: string;
   chartDescription: string;
+  totalCount?: number;
   numericLabel: string;
+  footerContent?: React.ReactNode;
 };
 
 export function DonutPieChart({
@@ -31,11 +35,10 @@ export function DonutPieChart({
   chartConfig,
   chartTitle,
   chartDescription,
+  totalCount,
   numericLabel,
+  footerContent
 }: DonutPieChartProps) {
-  const totalCount = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.count, 0);
-  }, []);
 
   return (
     <Card className="flex flex-col">
@@ -48,7 +51,7 @@ export function DonutPieChart({
           config={chartConfig}
           className="mx-auto aspect-square max-h-[250px]"
         >
-          <PieChart width={250} height={250}>
+          <PieChart width={250} height={250} className="text-foreground">
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel className="percentage" />}
@@ -75,7 +78,7 @@ export function DonutPieChart({
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalCount.toLocaleString()}
+                          {totalCount?.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
@@ -90,9 +93,13 @@ export function DonutPieChart({
                 }}
               />
             </Pie>
+            <ChartLegend content={<ChartLegendContent />}/>
           </PieChart>
         </ChartContainer>
       </CardContent>
+      <CardFooter className="flex-col gap-2 text-sm">
+        {footerContent}
+      </CardFooter>
     </Card>
   );
 }

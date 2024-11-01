@@ -28,7 +28,6 @@ export default async function ProcurementPage() {
       },
     }
   }) as Procurement[];
-
   // console.log(procurements);
   
   return (

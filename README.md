@@ -19,6 +19,8 @@
   - [x] Use reusable components
   - [ ] Global search
 - [ ] Insight charts
+  - [x] Make charts reusable
+  - [x] Query results from db
   - [ ] Add summary tables
 - [ ] Profile user info form
 - [ ] Add authentication
