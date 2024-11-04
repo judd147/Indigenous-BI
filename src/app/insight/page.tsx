@@ -3,7 +3,6 @@ import { procurement, procurementStrategy } from "~/server/db/schema";
 import { count, sum, eq } from "drizzle-orm";
 import { DonutPieChart } from "./pie-chart";
 import { type ChartConfig } from "~/components/ui/chart";
-
 import { CircleAlert } from "lucide-react";
 
 export type ChartData = {
@@ -88,11 +87,10 @@ strategyValueSummary.map((item: ChartData) => {
 });
 
 export default function InsightPage() {
-  console.log(totalSummary)
   return (
     <div className="container px-8 py-16">
       <p className="text-4xl font-bold">Insight Page</p>
-      <div className="container mx-auto py-10 grid grid-cols-2 gap-4">
+      <div className="container mx-auto py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <DonutPieChart
           chartConfig={chartConfig1}
           chartData={chartData1}

@@ -18,7 +18,7 @@
   - [x] Column visibility
   - [x] Use reusable components
   - [ ] Global search
-- [ ] Insight charts
+- [x] Insight charts
   - [x] Make charts reusable
   - [x] Query results from db
   - [ ] Add summary tables
