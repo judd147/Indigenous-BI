@@ -64,3 +64,4 @@
     @apply bg-background text-foreground;
   }
 }
+.percentage .tooltip-value::after { content:"%"; }
