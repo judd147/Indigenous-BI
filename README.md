@@ -21,6 +21,7 @@
 - [x] Insight charts
   - [x] Make charts reusable
   - [x] Query results from db
+  - [ ] Refactor db queries
   - [ ] Add summary tables
 - [ ] Profile user info form
 - [ ] Add authentication
