@@ -18,12 +18,16 @@
   - [x] Column visibility
   - [x] Use reusable components
   - [ ] Global search
+  - [ ] Display all procurements
 - [x] Insight charts
   - [x] Make charts reusable
   - [x] Query results from db
+  - [ ] Finish all charts
   - [ ] Refactor db queries
   - [ ] Add summary tables
 - [ ] Profile user info form
+  - [ ] Mockup UI from CCIB website
+  - [ ] Send user data to database
 - [ ] Add authentication
 - [ ] Deploy
 
