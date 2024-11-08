@@ -6,6 +6,7 @@
   - [x] Sidebar
   - [x] Active link
   - 🚧 Use shadcn sidebar
+  - 🚧 Use shadcn skeleton
 - [x] Scaffold basic UI
 - [x] Set up a real database
   - [x] Create tables
@@ -18,18 +19,18 @@
   - [x] Column visibility
   - [x] Use reusable components
   - [ ] Global search
-  - [ ] Display all procurements
 - [x] Insight charts
   - [x] Make charts reusable
   - [x] Query results from db
-  - [ ] Finish all charts
-  - [ ] Refactor db queries
+  - [x] Finish all charts
+  - [x] Footer notes
   - [ ] Add summary tables
+  - [ ] Refactor db queries & follow best practices
 - [ ] Profile user info form
   - [ ] Mockup UI from CCIB website
   - [ ] Send user data to database
-- [ ] Add authentication
-- [ ] Deploy
+  - [ ] Add auth
+- [x] Deploy
 
 ### Vanilla version
 - [ ] Sidebar and navigation (React Router)

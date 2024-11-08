@@ -1,11 +1,12 @@
 import { db } from "~/server/db/index";
 import { procurement, procurementStrategy, vendor } from "~/server/db/schema";
-import { count, sum, eq, sql, ne } from "drizzle-orm";
+import { count, sum, eq, sql, ne, and, desc } from "drizzle-orm";
 import { DonutPieChart } from "./pie-chart";
 import { StackedBarChart } from "./stacked-bar-chart";
 import { HorizontalBarChart } from "./horizontal-bar-chart";
 import { type ChartConfig } from "~/components/ui/chart";
 import { CircleAlert } from "lucide-react";
+import Link from "next/link";
 
 export type PieChartData = {
   category: string | undefined | null;
@@ -33,11 +34,10 @@ const totalSum = strategySummary.reduce((sum, obj) => sum + obj.sum, 0);
 
 const chartData1: PieChartData[] = [];
 strategySummary.map((item: PieChartData) => {
-  const newItem: PieChartData = {...item,
+  const newItem: PieChartData = {
+    ...item,
     category: item.category?.split(" ").join("-"),
-    pct: parseFloat(
-      ((item.count / totalCount) * 100).toFixed(1),
-    ),
+    pct: parseFloat(((item.count / totalCount) * 100).toFixed(1)),
   };
   newItem.fill = "var(--color-" + newItem.category + ")";
   chartData1.push(newItem);
@@ -45,11 +45,10 @@ strategySummary.map((item: PieChartData) => {
 
 const chartData2: PieChartData[] = [];
 strategySummary.map((item: PieChartData) => {
-  const newItem: PieChartData = {...item,
+  const newItem: PieChartData = {
+    ...item,
     category: item.category?.split(" ").join("-"),
-    pct: parseFloat(
-      ((item.sum / totalSum) * 100).toFixed(1),
-    ),
+    pct: parseFloat(((item.sum / totalSum) * 100).toFixed(1)),
   };
   newItem.fill = "var(--color-" + newItem.category + ")";
   chartData2.push(newItem);
@@ -81,10 +80,7 @@ const ownerSummary = await db
     sum: sum(procurement.contract_value).mapWith(procurement.contract_value),
   })
   .from(procurement)
-  .innerJoin(
-    vendor,
-    eq(procurement.vendor_name, vendor.vendor_name),
-  )
+  .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
   .innerJoin(
     procurementStrategy,
     eq(procurement.procurement_strategy_id, procurementStrategy.id),
@@ -97,10 +93,9 @@ const totalSumPSIB = ownerSummary.reduce((sum, obj) => sum + obj.sum, 0);
 
 const chartData3: PieChartData[] = [];
 ownerSummary.map((item: PieChartData) => {
-  const newItem: PieChartData = {...item,
-    pct: parseFloat(
-      ((item.count / totalCountPSIB) * 100).toFixed(1),
-    ),
+  const newItem: PieChartData = {
+    ...item,
+    pct: parseFloat(((item.count / totalCountPSIB) * 100).toFixed(1)),
     fill: "var(--color-" + item.category + ")",
   };
   chartData3.push(newItem);
@@ -108,10 +103,9 @@ ownerSummary.map((item: PieChartData) => {
 
 const chartData4: PieChartData[] = [];
 ownerSummary.map((item: PieChartData) => {
-  const newItem: PieChartData = {...item,
-    pct: parseFloat(
-      ((item.sum / totalSumPSIB) * 100).toFixed(1),
-    ),
+  const newItem: PieChartData = {
+    ...item,
+    pct: parseFloat(((item.sum / totalSumPSIB) * 100).toFixed(1)),
     fill: "var(--color-" + item.category + ")",
   };
   chartData4.push(newItem);
@@ -122,7 +116,7 @@ const chartConfig2 = {
     label: "non-Indigenous Business",
     color: "hsl(var(--chart-5))",
   },
-  "IB": {
+  IB: {
     label: "Indigenous Business",
     color: "hsl(var(--chart-3))",
   },
@@ -139,10 +133,9 @@ const industrySummary = await db
 
 const chartData5: PieChartData[] = [];
 industrySummary.map((item: PieChartData) => {
-  const newItem: PieChartData = {...item,
-    pct: parseFloat(
-      ((item.count / totalCount) * 100).toFixed(1),
-    ),
+  const newItem: PieChartData = {
+    ...item,
+    pct: parseFloat(((item.count / totalCount) * 100).toFixed(1)),
     fill: "var(--color-" + item.category + ")",
   };
   chartData5.push(newItem);
@@ -150,10 +143,9 @@ industrySummary.map((item: PieChartData) => {
 
 const chartData6: PieChartData[] = [];
 industrySummary.map((item: PieChartData) => {
-  const newItem: PieChartData = {...item,
-    pct: parseFloat(
-      ((item.sum / totalSum) * 100).toFixed(1),
-    ),
+  const newItem: PieChartData = {
+    ...item,
+    pct: parseFloat(((item.sum / totalSum) * 100).toFixed(1)),
     fill: "var(--color-" + item.category + ")",
   };
   chartData6.push(newItem);
@@ -164,7 +156,7 @@ const chartConfig3 = {
     label: "non-Tech",
     color: "hsl(var(--chart-1))",
   },
-  "Tech": {
+  Tech: {
     label: "Tech",
     color: "hsl(var(--chart-2))",
   },
@@ -174,32 +166,61 @@ const chartConfig3 = {
 const strategyIndustrySummary = await db
   .select({
     category: sql<string>`CASE WHEN ${procurementStrategy.strategy} = 'None' THEN 'None' ELSE 'PSIB/PSAB' END`,
-    "Tech_count": count(sql`CASE WHEN ${procurement.is_Tech} THEN 1 END`),
-    "non-Tech_count": count(sql`CASE WHEN NOT ${procurement.is_Tech} THEN 1 END`),
-    "Tech_sum": sum(sql`CASE WHEN ${procurement.is_Tech} THEN ${procurement.contract_value} END`).mapWith(procurement.contract_value),
-    "non-Tech_sum": sum(sql`CASE WHEN NOT ${procurement.is_Tech} THEN ${procurement.contract_value} END`).mapWith(procurement.contract_value),
+    Tech_count: count(sql`CASE WHEN ${procurement.is_Tech} THEN 1 END`),
+    "non-Tech_count": count(
+      sql`CASE WHEN NOT ${procurement.is_Tech} THEN 1 END`,
+    ),
+    Tech_sum: sum(
+      sql`CASE WHEN ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
+    ).mapWith(procurement.contract_value),
+    "non-Tech_sum": sum(
+      sql`CASE WHEN NOT ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
+    ).mapWith(procurement.contract_value),
   })
   .from(procurement)
   .innerJoin(
     procurementStrategy,
     eq(procurement.procurement_strategy_id, procurementStrategy.id),
   )
-  .groupBy(sql<string>`CASE WHEN ${procurementStrategy.strategy} = 'None' THEN 'None' ELSE 'PSIB/PSAB' END`);
+  .groupBy(
+    sql<string>`CASE WHEN ${procurementStrategy.strategy} = 'None' THEN 'None' ELSE 'PSIB/PSAB' END`,
+  );
 
-const chartData7: object[] = []
+const chartData7: object[] = [];
 strategyIndustrySummary.map((item) => {
-  const newItem: object = {...item,
-    "Tech": parseFloat(((item.Tech_count / (item.Tech_count + item["non-Tech_count"])) * 100).toFixed(1)),
-    "non-Tech": parseFloat(((item["non-Tech_count"] / (item.Tech_count + item["non-Tech_count"])) * 100).toFixed(1))
+  const newItem: object = {
+    ...item,
+    Tech: parseFloat(
+      (
+        (item.Tech_count / (item.Tech_count + item["non-Tech_count"])) *
+        100
+      ).toFixed(1),
+    ),
+    "non-Tech": parseFloat(
+      (
+        (item["non-Tech_count"] / (item.Tech_count + item["non-Tech_count"])) *
+        100
+      ).toFixed(1),
+    ),
   };
   chartData7.push(newItem);
 });
 
-const chartData8: object[] = []
+const chartData8: object[] = [];
 strategyIndustrySummary.map((item) => {
-  const newItem: object = {...item,
-    "Tech": parseFloat(((item.Tech_sum / (item.Tech_sum + item["non-Tech_sum"])) * 100).toFixed(1)),
-    "non-Tech": parseFloat(((item["non-Tech_sum"] / (item.Tech_sum + item["non-Tech_sum"])) * 100).toFixed(1))
+  const newItem: object = {
+    ...item,
+    Tech: parseFloat(
+      ((item.Tech_sum / (item.Tech_sum + item["non-Tech_sum"])) * 100).toFixed(
+        1,
+      ),
+    ),
+    "non-Tech": parseFloat(
+      (
+        (item["non-Tech_sum"] / (item.Tech_sum + item["non-Tech_sum"])) *
+        100
+      ).toFixed(1),
+    ),
   };
   chartData8.push(newItem);
 });
@@ -208,16 +229,19 @@ strategyIndustrySummary.map((item) => {
 const ownerIndustrySummary = await db
   .select({
     category: sql<string>`CASE WHEN ${vendor.is_IB} THEN 'IB' ELSE 'non-IB' END`,
-    "Tech_count": count(sql`CASE WHEN ${procurement.is_Tech} THEN 1 END`),
-    "non-Tech_count": count(sql`CASE WHEN NOT ${procurement.is_Tech} THEN 1 END`),
-    "Tech_sum": sum(sql`CASE WHEN ${procurement.is_Tech} THEN ${procurement.contract_value} END`).mapWith(procurement.contract_value),
-    "non-Tech_sum": sum(sql`CASE WHEN NOT ${procurement.is_Tech} THEN ${procurement.contract_value} END`).mapWith(procurement.contract_value),
+    Tech_count: count(sql`CASE WHEN ${procurement.is_Tech} THEN 1 END`),
+    "non-Tech_count": count(
+      sql`CASE WHEN NOT ${procurement.is_Tech} THEN 1 END`,
+    ),
+    Tech_sum: sum(
+      sql`CASE WHEN ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
+    ).mapWith(procurement.contract_value),
+    "non-Tech_sum": sum(
+      sql`CASE WHEN NOT ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
+    ).mapWith(procurement.contract_value),
   })
   .from(procurement)
-  .innerJoin(
-    vendor,
-    eq(procurement.vendor_name, vendor.vendor_name),
-  )
+  .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
   .innerJoin(
     procurementStrategy,
     eq(procurement.procurement_strategy_id, procurementStrategy.id),
@@ -225,35 +249,112 @@ const ownerIndustrySummary = await db
   .where(ne(procurementStrategy.strategy, "None"))
   .groupBy(sql<string>`CASE WHEN ${vendor.is_IB} THEN 'IB' ELSE 'non-IB' END`);
 
-const chartData9: object[] = []
+const chartData9: object[] = [];
 ownerIndustrySummary.map((item) => {
-  const newItem: object = {...item,
-    "Tech": parseFloat(((item.Tech_count / (item.Tech_count + item["non-Tech_count"])) * 100).toFixed(1)),
-    "non-Tech": parseFloat(((item["non-Tech_count"] / (item.Tech_count + item["non-Tech_count"])) * 100).toFixed(1))
+  const newItem: object = {
+    ...item,
+    Tech: parseFloat(
+      (
+        (item.Tech_count / (item.Tech_count + item["non-Tech_count"])) *
+        100
+      ).toFixed(1),
+    ),
+    "non-Tech": parseFloat(
+      (
+        (item["non-Tech_count"] / (item.Tech_count + item["non-Tech_count"])) *
+        100
+      ).toFixed(1),
+    ),
   };
   chartData9.push(newItem);
 });
 
-const chartData10: object[] = []
+const chartData10: object[] = [];
 ownerIndustrySummary.map((item) => {
-  const newItem: object = {...item,
-    "Tech": parseFloat(((item.Tech_sum / (item.Tech_sum + item["non-Tech_sum"])) * 100).toFixed(1)),
-    "non-Tech": parseFloat(((item["non-Tech_sum"] / (item.Tech_sum + item["non-Tech_sum"])) * 100).toFixed(1))
+  const newItem: object = {
+    ...item,
+    Tech: parseFloat(
+      ((item.Tech_sum / (item.Tech_sum + item["non-Tech_sum"])) * 100).toFixed(
+        1,
+      ),
+    ),
+    "non-Tech": parseFloat(
+      (
+        (item["non-Tech_sum"] / (item.Tech_sum + item["non-Tech_sum"])) *
+        100
+      ).toFixed(1),
+    ),
   };
   chartData10.push(newItem);
 });
 
-// multiple bar chart showing number/value of contracts under PSIB/PSAB by ownership
+// horizontal bar chart showing top 10 IB and non-IB vendors in contract valueunder PSIB/PSAB
+const topIBVendorSummary = await db
+  .select({
+    category: vendor.vendor_name,
+    sum: sum(procurement.contract_value).mapWith(procurement.contract_value)
+  })
+  .from(procurement)
+  .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
+  .innerJoin(
+    procurementStrategy,
+    eq(procurement.procurement_strategy_id, procurementStrategy.id),
+  )
+  .where(and(ne(procurementStrategy.strategy, "None"), eq(vendor.is_IB, true)))
+  .groupBy(vendor.vendor_name)
+  .orderBy(desc(sum(procurement.contract_value).mapWith(procurement.contract_value)))
+  .limit(10)
 
-// top 20 non-IB vendors under PSIB/PSAB
+const chartData11: object[] = [];
+topIBVendorSummary.map((item) => {
+  const newItem: object = {...item,
+    sum: parseFloat(((item.sum / 1_000_000).toFixed(2))),
+    alt: item.category.length-5 > (item.sum / 1_000_000) ? `${item.category.substring(0, 1+item.sum / 1_000_000)}...` : item.category // truncate the label manually
+  };
+  chartData11.push(newItem);
+});
+
+const chartConfig4 = {
+  sum: {
+    label: "Value",
+    color: "hsl(var(--chart-1))",
+  },
+  label: {
+    color: "hsl(var(--background))",
+  },
+} satisfies ChartConfig
+
+const topNonIBVendorSummary = await db
+  .select({
+    category: vendor.vendor_name,
+    sum: sum(procurement.contract_value).mapWith(procurement.contract_value)
+  })
+  .from(procurement)
+  .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
+  .innerJoin(
+    procurementStrategy,
+    eq(procurement.procurement_strategy_id, procurementStrategy.id),
+  )
+  .where(and(ne(procurementStrategy.strategy, "None"), eq(vendor.is_IB, false)))
+  .groupBy(vendor.vendor_name)
+  .orderBy(desc(sum(procurement.contract_value).mapWith(procurement.contract_value)))
+  .limit(10)
+
+const chartData12: object[] = [];
+topNonIBVendorSummary.map((item) => {
+  const newItem: object = {...item,
+    sum: parseFloat(((item.sum / 1_000_000).toFixed(2))),
+    alt: item.category.length-5 > (item.sum / 3_000_000) ? `${item.category.substring(0, 1+item.sum / 3_000_000)}...` : item.category // truncate the label manually
+  };
+  chartData12.push(newItem);
+});
 
 export default function InsightPage() {
-  console.log(strategyIndustrySummary);
-  console.log(ownerIndustrySummary);
+  console.log(topNonIBVendorSummary);
   return (
     <div className="container px-8 py-16">
       <p className="text-4xl font-bold">Insight Page</p>
-      <div className="container mx-auto py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="container mx-auto grid grid-cols-1 gap-4 py-10 sm:grid-cols-2 lg:grid-cols-3">
         <DonutPieChart
           chartConfig={chartConfig1}
           chartData={chartData1}
@@ -273,7 +374,7 @@ export default function InsightPage() {
           chartData={chartData2}
           chartTitle="Contract Value by Strategy"
           chartDescription="Year 2023"
-          totalCount={parseFloat(((totalSum) / 1_000_000).toFixed(0))}
+          totalCount={parseFloat((totalSum / 1_000_000).toFixed(0))}
           numericLabel="M CAD"
           footerContent={
             <div className="flex items-center gap-2 font-medium leading-none">
@@ -301,7 +402,7 @@ export default function InsightPage() {
           chartData={chartData4}
           chartTitle="Contract Value by Ownership"
           chartDescription="Year 2023 Under PSIB/PSAB"
-          totalCount={parseFloat(((totalSumPSIB) / 1_000_000).toFixed(0))}
+          totalCount={parseFloat((totalSumPSIB / 1_000_000).toFixed(0))}
           numericLabel="M CAD"
           footerContent={
             <div className="flex items-center gap-2 font-medium leading-none">
@@ -328,7 +429,7 @@ export default function InsightPage() {
           chartData={chartData6}
           chartTitle="Contract Value by Sector"
           chartDescription="Year 2023"
-          totalCount={parseFloat(((totalSum) / 1_000_000).toFixed(0))}
+          totalCount={parseFloat((totalSum / 1_000_000).toFixed(0))}
           numericLabel="M CAD"
           footerContent={
             <div className="flex items-center gap-2 font-medium leading-none">
@@ -336,7 +437,7 @@ export default function InsightPage() {
             </div>
           }
         />
-        <StackedBarChart 
+        <StackedBarChart
           chartConfig={chartConfig3}
           chartData={chartData7}
           chartTitle="Contracts by Sector x Strategy"
@@ -349,7 +450,7 @@ export default function InsightPage() {
           y1="Tech"
           y2="non-Tech"
         />
-        <StackedBarChart 
+        <StackedBarChart
           chartConfig={chartConfig3}
           chartData={chartData8}
           chartTitle="Contract Value by Sector x Strategy"
@@ -362,7 +463,7 @@ export default function InsightPage() {
           y1="Tech"
           y2="non-Tech"
         />
-        <StackedBarChart 
+        <StackedBarChart
           chartConfig={chartConfig3}
           chartData={chartData9}
           chartTitle="Contracts by Sector x Ownership"
@@ -375,7 +476,7 @@ export default function InsightPage() {
           y1="Tech"
           y2="non-Tech"
         />
-        <StackedBarChart 
+        <StackedBarChart
           chartConfig={chartConfig3}
           chartData={chartData10}
           chartTitle="Contract Value by Sector x Ownership"
@@ -388,8 +489,49 @@ export default function InsightPage() {
           y1="Tech"
           y2="non-Tech"
         />
-        {/* <HorizontalBarChart/> */}
+        <HorizontalBarChart 
+          chartConfig={chartConfig4}
+          chartData={chartData11}
+          chartTitle="Top 10 Indigenous Businesses in Tech"
+          chartDescription="Year 2023 Under PSIB/PSAB in M CAD"
+          footerContent={
+            <div className="flex items-center gap-2 font-medium leading-none">
+              IPSS, DONNA CONA, and VERSATIL BPI are leading in tech
+            </div>
+          }
+        />
+        <HorizontalBarChart 
+          chartConfig={chartConfig4}
+          chartData={chartData12}
+          chartTitle="Top 10 Non-IB in Tech"
+          chartDescription="Year 2023 Under PSIB/PSAB in M CAD"
+          footerContent={
+            <div className="flex items-center gap-2 font-medium leading-none">
+              ADIRONDACK, CHANTIER, and ADRM are leading in tech
+            </div>
+          }
+        />
       </div>
+      <footer className="mt-10 text-sm text-gray-600 space-y-4">
+        <p>
+          Note: The data for these visualizations is sourced from the{" "}
+          <Link
+            href={"https://search.open.canada.ca/contracts/"}
+            target="_blank"
+            className="underline"
+          >
+            federal government contract open dataset
+          </Link>
+          . Analysis is based on historical records in 2023.
+        </p>
+        <p>
+          IB: To identify Indigenous businesses, we used both the <Link href={"https://www.sac-isc.gc.ca/rea-ibd"} target="_blank" className="underline">federal Indigenous Business Directory</Link> and <Link href={"https://www.ccab.com/main/ccab_member/"} target="_blank" className="underline">member list from CCIB</Link> to match the names of vendors in contract records.
+        </p>
+        <p>
+          PSIB/PSAB: The Procurement Strategy for Aboriginal Business (PSAB) was created in 1996 and aimed to “increase the number of Aboriginal suppliers bidding for, and winning, federal contracts.” In August 2021, the program underwent a series of comprehensive changes and was renamed the Procurement Strategy for Indigenous Business (PSIB).
+          Among those changes, it was announced that the Government of Canada is implementing a mandatory requirement for federal departments and agencies to ensure a minimum of 5% of the total value of contracts are held by qualified Indigenous businesses. For more information, please visit <Link href={"https://opo-boa.gc.ca/pmr-psp-eng.html"} target="_blank" className="underline">https://opo-boa.gc.ca/pmr-psp-eng.html</Link>.
+        </p>
+      </footer>
     </div>
   );
 }

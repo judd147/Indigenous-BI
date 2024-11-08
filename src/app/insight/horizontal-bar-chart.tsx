@@ -1,8 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
-
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList } from "recharts"
 import {
   Card,
   CardContent,
@@ -12,69 +10,77 @@ import {
   CardTitle,
 } from "~/components/ui/card"
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/ui/chart"
 
-export const description = "A horizontal bar chart"
+type HorizontalBarChartProps = {
+  chartData: object[];
+  chartConfig: ChartConfig;
+  chartTitle: string;
+  chartDescription: string;
+  footerContent?: React.ReactNode;
+};
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-]
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig
-
-export function HorizontalBarChart() {
+export function HorizontalBarChart({ chartData, chartConfig, chartTitle, chartDescription, footerContent }: HorizontalBarChartProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Bar Chart - Horizontal</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+    <Card className="flex flex-col">
+      <CardHeader className="items-center">
+        <CardTitle>{chartTitle}</CardTitle>
+        <CardDescription>{chartDescription}</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <ChartContainer config={chartConfig}>
-          <BarChart
+        <BarChart
             accessibilityLayer
             data={chartData}
             layout="vertical"
-            width={250}
+            width={350}
             height={250}
+            margin={{ left: 15 }}
           >
-            <XAxis type="number" dataKey="desktop" hide />
+            <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="month"
+              dataKey="category"
               type="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              hide
             />
+            <XAxis dataKey="sum" type="number" hide />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent indicator="line" />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={5} />
+            <Bar
+              dataKey="sum"
+              layout="vertical"
+              fill="var(--color-sum)"
+              radius={4}
+            >
+              <LabelList
+                dataKey="alt"
+                position="insideLeft"
+                offset={8}
+                className="fill-[--color-label]"
+                fontSize={12}
+              />
+              <LabelList
+                dataKey="sum"
+                position="right"
+                offset={8}
+                className="fill-foreground"
+                fontSize={12}
+              />
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
+      <CardFooter className="flex-col gap-2 text-sm">
+        {footerContent}
       </CardFooter>
     </Card>
   )

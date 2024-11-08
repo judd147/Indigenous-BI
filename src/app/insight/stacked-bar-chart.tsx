@@ -32,11 +32,11 @@ type StackedBarChartProps = {
 export function StackedBarChart({ chartData, chartConfig, chartTitle, chartDescription, footerContent, y1, y2 }: StackedBarChartProps) {
   return (
     <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
+      <CardHeader className="items-center">
         <CardTitle>{chartTitle}</CardTitle>
         <CardDescription>{chartDescription}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex flex-1 justify-center items-center">
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
           <BarChart accessibilityLayer data={chartData} width={250} height={250}>
             <CartesianGrid vertical={false} />
