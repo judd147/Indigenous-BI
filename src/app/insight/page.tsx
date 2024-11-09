@@ -1,12 +1,18 @@
-import { db } from "~/server/db/index";
-import { procurement, procurementStrategy, vendor } from "~/server/db/schema";
-import { count, sum, eq, sql, ne, and, desc } from "drizzle-orm";
 import { DonutPieChart } from "./pie-chart";
 import { StackedBarChart } from "./stacked-bar-chart";
 import { HorizontalBarChart } from "./horizontal-bar-chart";
 import { type ChartConfig } from "~/components/ui/chart";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
+import {
+  getStrategySummary,
+  getOwnerSummary,
+  getIndustrySummary,
+  getStrategyIndustrySummary,
+  getOwnerIndustrySummary,
+  getTopIBVendorSummary,
+  getTopNonIBVendorSummary,
+} from "~/server/db/queries";
 
 export type PieChartData = {
   category: string | undefined | null;
@@ -16,19 +22,8 @@ export type PieChartData = {
   fill?: string;
 };
 
-const strategySummary = await db
-  .select({
-    category: procurementStrategy.strategy,
-    count: count(),
-    sum: sum(procurement.contract_value).mapWith(procurement.contract_value),
-  })
-  .from(procurement)
-  .innerJoin(
-    procurementStrategy,
-    eq(procurement.procurement_strategy_id, procurementStrategy.id),
-  )
-  .groupBy(procurementStrategy.strategy);
-
+// pie charts
+const strategySummary = await getStrategySummary();
 const totalCount = strategySummary.reduce((sum, obj) => sum + obj.count, 0);
 const totalSum = strategySummary.reduce((sum, obj) => sum + obj.sum, 0);
 
@@ -73,21 +68,7 @@ const chartConfig1 = {
   },
 } satisfies ChartConfig;
 
-const ownerSummary = await db
-  .select({
-    category: sql<string>`CASE WHEN ${vendor.is_IB} THEN 'IB' ELSE 'non-IB' END`,
-    count: count(),
-    sum: sum(procurement.contract_value).mapWith(procurement.contract_value),
-  })
-  .from(procurement)
-  .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
-  .innerJoin(
-    procurementStrategy,
-    eq(procurement.procurement_strategy_id, procurementStrategy.id),
-  )
-  .where(ne(procurementStrategy.strategy, "None"))
-  .groupBy(vendor.is_IB);
-
+const ownerSummary = await getOwnerSummary();
 const totalCountPSIB = ownerSummary.reduce((sum, obj) => sum + obj.count, 0);
 const totalSumPSIB = ownerSummary.reduce((sum, obj) => sum + obj.sum, 0);
 
@@ -122,14 +103,7 @@ const chartConfig2 = {
   },
 } satisfies ChartConfig;
 
-const industrySummary = await db
-  .select({
-    category: sql<string>`CASE WHEN ${procurement.is_Tech} THEN 'Tech' ELSE 'non-Tech' END`,
-    count: count(),
-    sum: sum(procurement.contract_value).mapWith(procurement.contract_value),
-  })
-  .from(procurement)
-  .groupBy(procurement.is_Tech);
+const industrySummary = await getIndustrySummary();
 
 const chartData5: PieChartData[] = [];
 industrySummary.map((item: PieChartData) => {
@@ -163,28 +137,7 @@ const chartConfig3 = {
 } satisfies ChartConfig;
 
 // stacked bar chart showing pecentage of tech contracts by strategy
-const strategyIndustrySummary = await db
-  .select({
-    category: sql<string>`CASE WHEN ${procurementStrategy.strategy} = 'None' THEN 'None' ELSE 'PSIB/PSAB' END`,
-    Tech_count: count(sql`CASE WHEN ${procurement.is_Tech} THEN 1 END`),
-    "non-Tech_count": count(
-      sql`CASE WHEN NOT ${procurement.is_Tech} THEN 1 END`,
-    ),
-    Tech_sum: sum(
-      sql`CASE WHEN ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
-    ).mapWith(procurement.contract_value),
-    "non-Tech_sum": sum(
-      sql`CASE WHEN NOT ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
-    ).mapWith(procurement.contract_value),
-  })
-  .from(procurement)
-  .innerJoin(
-    procurementStrategy,
-    eq(procurement.procurement_strategy_id, procurementStrategy.id),
-  )
-  .groupBy(
-    sql<string>`CASE WHEN ${procurementStrategy.strategy} = 'None' THEN 'None' ELSE 'PSIB/PSAB' END`,
-  );
+const strategyIndustrySummary = await getStrategyIndustrySummary();
 
 const chartData7: object[] = [];
 strategyIndustrySummary.map((item) => {
@@ -226,28 +179,7 @@ strategyIndustrySummary.map((item) => {
 });
 
 // stacked bar chart showing pecentage of tech contracts under PSIB/PSAB by ownership
-const ownerIndustrySummary = await db
-  .select({
-    category: sql<string>`CASE WHEN ${vendor.is_IB} THEN 'IB' ELSE 'non-IB' END`,
-    Tech_count: count(sql`CASE WHEN ${procurement.is_Tech} THEN 1 END`),
-    "non-Tech_count": count(
-      sql`CASE WHEN NOT ${procurement.is_Tech} THEN 1 END`,
-    ),
-    Tech_sum: sum(
-      sql`CASE WHEN ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
-    ).mapWith(procurement.contract_value),
-    "non-Tech_sum": sum(
-      sql`CASE WHEN NOT ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
-    ).mapWith(procurement.contract_value),
-  })
-  .from(procurement)
-  .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
-  .innerJoin(
-    procurementStrategy,
-    eq(procurement.procurement_strategy_id, procurementStrategy.id),
-  )
-  .where(ne(procurementStrategy.strategy, "None"))
-  .groupBy(sql<string>`CASE WHEN ${vendor.is_IB} THEN 'IB' ELSE 'non-IB' END`);
+const ownerIndustrySummary = await getOwnerIndustrySummary();
 
 const chartData9: object[] = [];
 ownerIndustrySummary.map((item) => {
@@ -289,27 +221,17 @@ ownerIndustrySummary.map((item) => {
 });
 
 // horizontal bar chart showing top 10 IB and non-IB vendors in contract valueunder PSIB/PSAB
-const topIBVendorSummary = await db
-  .select({
-    category: vendor.vendor_name,
-    sum: sum(procurement.contract_value).mapWith(procurement.contract_value)
-  })
-  .from(procurement)
-  .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
-  .innerJoin(
-    procurementStrategy,
-    eq(procurement.procurement_strategy_id, procurementStrategy.id),
-  )
-  .where(and(ne(procurementStrategy.strategy, "None"), eq(vendor.is_IB, true)))
-  .groupBy(vendor.vendor_name)
-  .orderBy(desc(sum(procurement.contract_value).mapWith(procurement.contract_value)))
-  .limit(10)
+const topIBVendorSummary = await getTopIBVendorSummary();
 
 const chartData11: object[] = [];
 topIBVendorSummary.map((item) => {
-  const newItem: object = {...item,
-    sum: parseFloat(((item.sum / 1_000_000).toFixed(2))),
-    alt: item.category.length-5 > (item.sum / 1_000_000) ? `${item.category.substring(0, 1+item.sum / 1_000_000)}...` : item.category // truncate the label manually
+  const newItem: object = {
+    ...item,
+    sum: parseFloat((item.sum / 1_000_000).toFixed(2)),
+    alt:
+      item.category.length - 5 > item.sum / 1_000_000
+        ? `${item.category.substring(0, 1 + item.sum / 1_000_000)}...`
+        : item.category, // truncate the label manually
   };
   chartData11.push(newItem);
 });
@@ -322,29 +244,19 @@ const chartConfig4 = {
   label: {
     color: "hsl(var(--background))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
-const topNonIBVendorSummary = await db
-  .select({
-    category: vendor.vendor_name,
-    sum: sum(procurement.contract_value).mapWith(procurement.contract_value)
-  })
-  .from(procurement)
-  .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
-  .innerJoin(
-    procurementStrategy,
-    eq(procurement.procurement_strategy_id, procurementStrategy.id),
-  )
-  .where(and(ne(procurementStrategy.strategy, "None"), eq(vendor.is_IB, false)))
-  .groupBy(vendor.vendor_name)
-  .orderBy(desc(sum(procurement.contract_value).mapWith(procurement.contract_value)))
-  .limit(10)
+const topNonIBVendorSummary = await getTopNonIBVendorSummary();
 
 const chartData12: object[] = [];
 topNonIBVendorSummary.map((item) => {
-  const newItem: object = {...item,
-    sum: parseFloat(((item.sum / 1_000_000).toFixed(2))),
-    alt: item.category.length-5 > (item.sum / 3_000_000) ? `${item.category.substring(0, 1+item.sum / 3_000_000)}...` : item.category // truncate the label manually
+  const newItem: object = {
+    ...item,
+    sum: parseFloat((item.sum / 1_000_000).toFixed(2)),
+    alt:
+      item.category.length - 5 > item.sum / 3_000_000
+        ? `${item.category.substring(0, 1 + item.sum / 3_000_000)}...`
+        : item.category, // truncate the label manually
   };
   chartData12.push(newItem);
 });
@@ -489,7 +401,7 @@ export default function InsightPage() {
           y1="Tech"
           y2="non-Tech"
         />
-        <HorizontalBarChart 
+        <HorizontalBarChart
           chartConfig={chartConfig4}
           chartData={chartData11}
           chartTitle="Top 10 Indigenous Businesses in Tech"
@@ -500,7 +412,7 @@ export default function InsightPage() {
             </div>
           }
         />
-        <HorizontalBarChart 
+        <HorizontalBarChart
           chartConfig={chartConfig4}
           chartData={chartData12}
           chartTitle="Top 10 Non-IB in Tech"
@@ -512,7 +424,7 @@ export default function InsightPage() {
           }
         />
       </div>
-      <footer className="mt-10 text-sm text-gray-600 space-y-4">
+      <footer className="mt-10 space-y-4 text-sm text-gray-600">
         <p>
           Note: The data for these visualizations is sourced from the{" "}
           <Link
@@ -525,11 +437,42 @@ export default function InsightPage() {
           . Analysis is based on historical records in 2023.
         </p>
         <p>
-          IB: To identify Indigenous businesses, we used both the <Link href={"https://www.sac-isc.gc.ca/rea-ibd"} target="_blank" className="underline">federal Indigenous Business Directory</Link> and <Link href={"https://www.ccab.com/main/ccab_member/"} target="_blank" className="underline">member list from CCIB</Link> to match the names of vendors in contract records.
+          IB: To identify Indigenous businesses, we used both the{" "}
+          <Link
+            href={"https://www.sac-isc.gc.ca/rea-ibd"}
+            target="_blank"
+            className="underline"
+          >
+            federal Indigenous Business Directory
+          </Link>{" "}
+          and{" "}
+          <Link
+            href={"https://www.ccab.com/main/ccab_member/"}
+            target="_blank"
+            className="underline"
+          >
+            member list from CCIB
+          </Link>{" "}
+          to match the names of vendors in contract records.
         </p>
         <p>
-          PSIB/PSAB: The Procurement Strategy for Aboriginal Business (PSAB) was created in 1996 and aimed to “increase the number of Aboriginal suppliers bidding for, and winning, federal contracts.” In August 2021, the program underwent a series of comprehensive changes and was renamed the Procurement Strategy for Indigenous Business (PSIB).
-          Among those changes, it was announced that the Government of Canada is implementing a mandatory requirement for federal departments and agencies to ensure a minimum of 5% of the total value of contracts are held by qualified Indigenous businesses. For more information, please visit <Link href={"https://opo-boa.gc.ca/pmr-psp-eng.html"} target="_blank" className="underline">https://opo-boa.gc.ca/pmr-psp-eng.html</Link>.
+          PSIB/PSAB: The Procurement Strategy for Aboriginal Business (PSAB) was
+          created in 1996 and aimed to “increase the number of Aboriginal
+          suppliers bidding for, and winning, federal contracts.” In August
+          2021, the program underwent a series of comprehensive changes and was
+          renamed the Procurement Strategy for Indigenous Business (PSIB). Among
+          those changes, it was announced that the Government of Canada is
+          implementing a mandatory requirement for federal departments and
+          agencies to ensure a minimum of 5% of the total value of contracts are
+          held by qualified Indigenous businesses. For more information, please
+          visit{" "}
+          <Link
+            href={"https://opo-boa.gc.ca/pmr-psp-eng.html"}
+            target="_blank"
+            className="underline"
+          >
+            https://opo-boa.gc.ca/pmr-psp-eng.html
+          </Link>
         </p>
       </footer>
     </div>
