@@ -21,7 +21,7 @@ export const vendorRelations = relations(vendor, ({ many }) => ({
 
 export const solicitationProcedure = createTable('solicitation_procedure', {
   id: serial('id').primaryKey(),
-  procedure: varchar('procedure', { length: 256 }).unique(),
+  procedure: varchar('procedure', { length: 256 }).unique().notNull(),
 });
 
 export const solicitationProcedureRelations = relations(solicitationProcedure, ({ many }) => ({
@@ -30,7 +30,7 @@ export const solicitationProcedureRelations = relations(solicitationProcedure, (
 
 export const awardCriteria = createTable('award_criteria', {
   id: serial('id').primaryKey(),
-  criteria: varchar('criteria', { length: 256 }).unique(),
+  criteria: varchar('criteria', { length: 256 }).unique().notNull(),
 });
 
 export const awardCriteriaRelations = relations(awardCriteria, ({ many }) => ({
@@ -39,7 +39,7 @@ export const awardCriteriaRelations = relations(awardCriteria, ({ many }) => ({
 
 export const procurementStrategy = createTable('procurement_strategy', {
   id: serial('id').primaryKey(),
-  strategy: varchar('strategy', { length: 256 }).unique(),
+  strategy: varchar('strategy', { length: 256 }).unique().notNull(),
 });
 
 export const procurementStrategyRelations = relations(procurementStrategy, ({ many }) => ({
@@ -48,7 +48,7 @@ export const procurementStrategyRelations = relations(procurementStrategy, ({ ma
 
 export const department = createTable('department', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 256 }).unique(),
+  name: varchar('name', { length: 256 }).unique().notNull(),
 });
 
 export const departmentRelations = relations(department, ({ many }) => ({
@@ -95,3 +95,48 @@ export const procurementRelations = relations(procurement, ({ one }) => ({
     references: [awardCriteria.id],
   }),
 }));
+
+// summary tables
+export const strategySummary = createTable('strategySummary', {
+  category: varchar('category', { length: 256 }).primaryKey(),
+  count: integer('count').notNull(),
+  sum: real('sum').notNull()
+});
+
+export const ownerSummary = createTable('ownerSummary', {
+  category: varchar('category', { length: 256 }).primaryKey(),
+  count: integer('count').notNull(),
+  sum: real('sum').notNull()
+});
+
+export const industrySummary = createTable('industrySummary', {
+  category: varchar('category', { length: 256 }).primaryKey(),
+  count: integer('count').notNull(),
+  sum: real('sum').notNull()
+}); 
+
+export const strategyIndustrySummary = createTable('strategyIndustrySummary', {
+  category: varchar('category', { length: 256 }).primaryKey(),
+  Tech_count: integer('Tech_count').notNull(),
+  "non-Tech_count": integer('non-Tech_count').notNull(),
+  Tech_sum: real('Tech_sum').notNull(),
+  "non-Tech_sum": real('non-Tech_sum').notNull(),
+});
+
+export const ownerIndustrySummary = createTable('ownerIndustrySummary', {
+  category: varchar('category', { length: 256 }).primaryKey(),
+  Tech_count: integer('Tech_count').notNull(),
+  "non-Tech_count": integer('non-Tech_count').notNull(),
+  Tech_sum: real('Tech_sum').notNull(),
+  "non-Tech_sum": real('non-Tech_sum').notNull(),
+}); 
+
+export const topIBVendorSummary = createTable('topIBVendorSummary', {
+  category: varchar('category', { length: 256 }).primaryKey(),
+  sum: real('sum').notNull()
+});
+
+export const topNonIBVendorSummary = createTable('topNonIBVendorSummary', {
+  category: varchar('category', { length: 256 }).primaryKey(),
+  sum: real('sum').notNull()
+});

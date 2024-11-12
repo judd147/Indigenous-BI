@@ -15,7 +15,7 @@ import {
 } from "~/server/db/queries";
 
 export type PieChartData = {
-  category: string | undefined | null;
+  category: string;
   count: number;
   sum: number;
   pct?: number;
@@ -31,7 +31,7 @@ const chartData1: PieChartData[] = [];
 strategySummary.map((item: PieChartData) => {
   const newItem: PieChartData = {
     ...item,
-    category: item.category?.split(" ").join("-"),
+    category: item.category.split(" ").join("-"),
     pct: parseFloat(((item.count / totalCount) * 100).toFixed(1)),
   };
   newItem.fill = "var(--color-" + newItem.category + ")";
@@ -42,7 +42,7 @@ const chartData2: PieChartData[] = [];
 strategySummary.map((item: PieChartData) => {
   const newItem: PieChartData = {
     ...item,
-    category: item.category?.split(" ").join("-"),
+    category: item.category.split(" ").join("-"),
     pct: parseFloat(((item.sum / totalSum) * 100).toFixed(1)),
   };
   newItem.fill = "var(--color-" + newItem.category + ")";
@@ -262,7 +262,7 @@ topNonIBVendorSummary.map((item) => {
 });
 
 export default function InsightPage() {
-  console.log(topNonIBVendorSummary);
+  //console.log(topNonIBVendorSummary);
   return (
     <div className="container px-8 py-16">
       <p className="text-4xl font-bold">Insight Page</p>

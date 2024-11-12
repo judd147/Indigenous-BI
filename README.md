@@ -5,7 +5,7 @@
 - [x] Sidebar and navigation
   - [x] Sidebar
   - [x] Active link
-  - 🚧 Use shadcn sidebar & skeleton
+  - 🚧 Use shadcn sidebar & suspense skeleton
 - [x] Scaffold basic UI
 - [x] Set up a real database
   - [x] Create tables
@@ -24,8 +24,8 @@
   - [x] Query results from db
   - [x] Finish all charts
   - [x] Footer notes
-  - [ ] Add summary tables
-  - [ ] Refactor db queries & follow best practices
+  - [x] Add summary tables
+  - [x] Refactor db queries & follow best practices
 - [ ] Profile user info form
   - [ ] Mockup UI from CCIB website
   - [ ] Send user data to database
