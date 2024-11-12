@@ -1,3 +1,6 @@
+// to run this file, you need to run the following command in the terminal:
+// pnpm add -D tsx
+// pnpm tsx src/server/db/seed.ts
 import * as fs from "fs";
 import Papa from "papaparse";
 import { eq } from 'drizzle-orm';
@@ -9,7 +12,23 @@ import {
   procurementStrategy,
   department,
   procurement,
+  strategySummary,
+  ownerSummary,
+  industrySummary,
+  strategyIndustrySummary,
+  ownerIndustrySummary,
+  topIBVendorSummary,
+  topNonIBVendorSummary,
 } from "./schema.js";
+import {
+  getStrategySummary,
+  getOwnerSummary,
+  getIndustrySummary,
+  getStrategyIndustrySummary,
+  getOwnerIndustrySummary,
+  getTopIBVendorSummary,
+  getTopNonIBVendorSummary,
+} from "./queries.js";
 import pkg from '@next/env'
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const { loadEnvConfig } = pkg;
@@ -114,4 +133,38 @@ const seed = async () => {
   }
 };
 
+const seedSummary = async () => {
+  const strategyData = await getStrategySummary();
+  const ownerData = await getOwnerSummary();
+  const industryData = await getIndustrySummary();
+  const strategyIndustryData = await getStrategyIndustrySummary();
+  const ownerIndustryData = await getOwnerIndustrySummary();
+  const topIBVendorData = await getTopIBVendorSummary();
+  const topNonIBVendorData = await getTopNonIBVendorSummary();
+
+  // Insert data into strategySummary table
+  await db.insert(strategySummary).values(strategyData);
+
+  // Insert data into ownerSummary table
+  await db.insert(ownerSummary).values(ownerData);
+
+  // Insert data into industrySummary table
+  await db.insert(industrySummary).values(industryData);
+
+  // Insert data into strategyIndustrySummary table
+  await db.insert(strategyIndustrySummary).values(strategyIndustryData);
+
+  // Insert data into ownerIndustrySummary table
+  await db.insert(ownerIndustrySummary).values(ownerIndustryData);
+
+  // Insert data into topIBVendorSummary table
+  await db.insert(topIBVendorSummary).values(topIBVendorData);
+
+  // Insert data into topNonIBVendorSummary table
+  await db.insert(topNonIBVendorSummary).values(topNonIBVendorData);
+
+  console.log("Summary tables seeded successfully.");
+}
+
 void seed();
+void seedSummary();

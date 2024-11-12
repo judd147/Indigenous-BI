@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Label, Pie, PieChart } from "recharts";
-import { type ChartData }  from "~/app/insight/page";
+import { type PieChartData }  from "~/app/insight/page";
 import { ChartLegend, ChartLegendContent } from "~/components/ui/chart";
 
 import {
@@ -21,7 +21,7 @@ import {
 } from "~/components/ui/chart";
 
 type DonutPieChartProps = {
-  chartData: ChartData[];
+  chartData: PieChartData[];
   chartConfig: ChartConfig;
   chartTitle: string;
   chartDescription: string;
@@ -46,7 +46,7 @@ export function DonutPieChart({
         <CardTitle>{chartTitle}</CardTitle>
         <CardDescription>{chartDescription}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1">
         <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square max-h-[250px]"
