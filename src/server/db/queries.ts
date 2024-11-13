@@ -14,7 +14,7 @@ import {
 } from "~/server/db/schema";
 import { count, sum, eq, sql, ne, and, desc } from "drizzle-orm";
 
-const cached = true; // toggle to change the data source
+const cached = false; // toggle to change the data source
 
 export async function getStrategySummary() {
   const data = cached
