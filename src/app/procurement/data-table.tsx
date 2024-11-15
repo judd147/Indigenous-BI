@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -9,11 +9,9 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-
+} from "@tanstack/react-table"
 import {
   Table,
   TableBody,
@@ -21,32 +19,54 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
-import { Input } from "~/components/ui/input";
-import { Pagination } from "./pagination";
-import { ColumnToggle } from "./column-toggle";
+} from "../../components/ui/table"
+import { Pagination } from "./pagination"
+import { useRouter, useSearchParams } from 'next/navigation'
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData>[]
+  data: TData[]
+  pageCount: number
+  pageIndex: number
+  pageSize: number
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  pageCount,
+  pageIndex,
+  pageSize,
+}: DataTableProps<TData>) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+
+  const createQueryString = React.useCallback(
+    (params: Record<string, string | number | null>) => {
+      const newSearchParams = new URLSearchParams(searchParams.toString())
+      
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === null) {
+          newSearchParams.delete(key)
+        } else {
+          newSearchParams.set(key, String(value))
+        }
+      })
+      
+      return newSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const table = useReactTable({
     data,
     columns,
+    pageCount,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
@@ -56,41 +76,47 @@ export function DataTable<TData, TValue>({
       sorting,
       columnFilters,
       columnVisibility,
+      pagination: {
+        pageIndex,
+        pageSize,
+      },
     },
-  });
+    manualPagination: true,
+    // Add these handlers for pagination
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const newState = updater({
+          pageIndex,
+          pageSize,
+        })
+        
+        router.push(
+          `?${createQueryString({
+            page: newState.pageIndex + 1,
+            limit: newState.pageSize,
+          })}`
+        )
+      }
+    },
+  })
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter vendors..."
-          value={
-            (table.getColumn("vendor_name")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("vendor_name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <ColumnToggle table={table}/>
-      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -125,8 +151,8 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="py-4">
-        <Pagination table={table}/>
+        <Pagination table={table} />
       </div>
     </div>
-  );
+  )
 }
