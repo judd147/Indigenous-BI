@@ -4,7 +4,7 @@ import { db } from "~/server/db/index"
 import { count } from "drizzle-orm";
 import { procurement } from "~/server/db/schema";
 
-interface PageProps {
+interface PageProps extends Promise<Record<string, string | string[] | undefined>> {
   searchParams: {
     page: string
     limit: string
