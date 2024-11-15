@@ -12,10 +12,11 @@ interface PageProps {
 }
 
 export default async function ProcurementPage({ searchParams }: PageProps) {
-  // eslint-disable-next-line @typescript-eslint/await-thenable
-  const params = await searchParams
-  const page = Number(params.page) || 1
-  const limit = Number(params.limit) || 10
+  const page = Number(searchParams.page) || 1
+  const limit = Number(searchParams.limit) || 10
+  // const params = await searchParams
+  // const page = Number(params.page) || 1
+  // const limit = Number(params.limit) || 10
 
   // Calculate offset
   const offset = (page - 1) * limit
