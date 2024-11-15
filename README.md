@@ -5,7 +5,7 @@
 - [x] Sidebar and navigation
   - [x] Sidebar
   - [x] Active link
-  - 🚧 Use shadcn sidebar & suspense skeleton
+  - [ ] Use shadcn sidebar
 - [x] Scaffold basic UI
 - [x] Set up a real database
   - [x] Create tables
@@ -17,8 +17,10 @@
   - [x] Filtering
   - [x] Column visibility
   - [x] Use reusable components
-  - [ ] Global search
   - [x] Backend pagination
+  - [x] Global search w debounce
+  - [ ] Backend sorting
+  - [ ] Category filtering
 - [x] Insight charts
   - [x] Make charts reusable
   - [x] Query results from db
@@ -31,8 +33,10 @@
   - [ ] Send user data to database
   - [ ] Add auth
 - [x] Deploy
+- [ ] Suspense skeleton
 
 ### Vanilla version
-- [ ] Sidebar and navigation (React Router)
-- [ ] Backend API endpoints & CRUD (Express)
-- [ ] Build UI reusing components
+- [x] Backend API endpoints & CRUD (Express)
+- [ ] Setup routing & navigation (React Router)
+- [ ] Build UI by reusing components
+- [ ] Connect to the backend
