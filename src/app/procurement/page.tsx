@@ -1,7 +1,7 @@
 import { type Procurement, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { db } from "~/server/db/index";
-import { or, like, sql, count } from "drizzle-orm";
+import { or, ilike, sql, count, desc, asc } from "drizzle-orm";
 import { procurement } from "~/server/db/schema";
 
 interface PageProps {
@@ -9,6 +9,8 @@ interface PageProps {
     page?: string;
     limit?: string;
     query?: string;
+    sort?: string;
+    order?: string;
   }>;
 }
 
@@ -18,12 +20,14 @@ export default async function ProcurementPage({ searchParams }: PageProps) {
   const limit = Number(params?.limit) || 10;
   const offset = (page - 1) * limit;
   const query = params?.query?.trim();
+  const sort = params?.sort;
+  const order = params?.order;
 
   // Define the search condition
   const searchCondition = query
   ? or(
-      like(procurement.vendor_name, `%${query}%`),
-      like(procurement.description, `%${query}%`)
+      ilike(procurement.vendor_name, `%${query}%`),
+      ilike(procurement.description, `%${query}%`)
     )
   : sql`true`; // Always true if no search query
 
@@ -31,7 +35,7 @@ export default async function ProcurementPage({ searchParams }: PageProps) {
   const countResult = await db
     .select({ count: count() })
     .from(procurement)
-    .where(searchCondition);
+    .where(searchCondition)
 
   const totalCount = countResult[0]?.count ?? 0;
 
@@ -40,6 +44,14 @@ export default async function ProcurementPage({ searchParams }: PageProps) {
     limit: limit,
     offset: offset,
     where: searchCondition,
+    orderBy: (procurement, { asc, desc }) => [
+      // Check if sortField exists and apply sorting
+      sort 
+        ? order === "desc"
+          ? desc(procurement[sort as keyof typeof procurement])
+          : asc(procurement[sort as keyof typeof procurement])
+        : asc(procurement.id) // default sorting
+    ],
     with: {
       solicitationProcedure: {
         columns: {

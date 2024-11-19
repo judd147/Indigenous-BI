@@ -13,14 +13,14 @@
   - [x] Seed data from CSV to Vercel Postgres
 - [x] Procurement data table
   - [x] Frontend pagination
-  - [x] Sorting
-  - [x] Filtering
+  - [x] Frontend sorting
+  - [x] Frontend filtering
   - [x] Column visibility
   - [x] Use reusable components
   - [x] Backend pagination
   - [x] Global search w debounce
-  - [ ] Backend sorting
-  - [ ] Category filtering
+  - [x] Backend sorting
+  - [ ] Backend filtering (category)
 - [x] Insight charts
   - [x] Make charts reusable
   - [x] Query results from db
@@ -34,6 +34,7 @@
   - [ ] Add auth
 - [x] Deploy
 - [ ] Suspense skeleton
+- [ ] Placeholder for the rest of the pages
 
 ### Vanilla version
 - [x] Backend API endpoints & CRUD (Express)
