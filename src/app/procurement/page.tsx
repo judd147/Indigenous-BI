@@ -1,7 +1,7 @@
 import { type Procurement, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { db } from "~/server/db/index";
-import { or, ilike, sql, count, desc, asc } from "drizzle-orm";
+import { or, ilike, sql, count } from "drizzle-orm";
 import { procurement } from "~/server/db/schema";
 
 interface PageProps {
