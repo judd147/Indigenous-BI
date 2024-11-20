@@ -4,7 +4,7 @@ import { db } from "~/server/db/index"
 
 export default async function ProcurementPage() {
   const procurements = await db.query.procurement.findMany({
-    limit: 35000,
+    limit: 30000,
     with: {
       solicitationProcedure: {
         columns: {
