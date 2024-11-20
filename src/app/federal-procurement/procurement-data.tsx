@@ -1,8 +1,8 @@
 import { type Procurement, columns } from "./columns";
 import { DataTable } from "./data-table";
-import { db } from "~/server/db/index";
-import { or, ilike, sql, count } from "drizzle-orm";
+import { or, ilike, sql } from "drizzle-orm";
 import { procurement } from "~/server/db/schema";
+import { getProcurementCount, getProcurementData } from "~/server/db/queries";
 
 export default async function ProcurementData({
   page,
@@ -17,7 +17,6 @@ export default async function ProcurementData({
   sort?: string;
   order?: string;
 }) {
-  const offset = (page - 1) * limit;
 
   // Define the search condition
   const searchCondition = query
@@ -27,49 +26,8 @@ export default async function ProcurementData({
       )
     : sql`true`;
 
-  // Count total records with search condition
-  const countResult = await db
-    .select({ count: count() })
-    .from(procurement)
-    .where(searchCondition);
-
-  const totalCount = countResult[0]?.count ?? 0;
-
-  // Fetch paginated procurement records with joins
-  const procurements = await db.query.procurement.findMany({
-    limit: limit,
-    offset: offset,
-    where: searchCondition,
-    orderBy: (procurement, { asc, desc }) => [
-      sort
-        ? order === "desc"
-          ? desc(procurement[sort as keyof typeof procurement])
-          : asc(procurement[sort as keyof typeof procurement])
-        : asc(procurement.id),
-    ],
-    with: {
-      solicitationProcedure: {
-        columns: {
-          procedure: true,
-        },
-      },
-      department: {
-        columns: {
-          name: true,
-        },
-      },
-      procurementStrategy: {
-        columns: {
-          strategy: true,
-        },
-      },
-      awardCriteria: {
-        columns: {
-          criteria: true,
-        },
-      },
-    },
-  }) as Procurement[];
+  const totalCount = await getProcurementCount(searchCondition);
+  const procurements = await getProcurementData({ page, limit, searchCondition, sort, order }) as Procurement[];
 
   return (
     <DataTable

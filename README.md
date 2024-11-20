@@ -31,12 +31,16 @@
 - [x] Profile form
   - [x] Mockup UI from CCIB website
   - [ ] Send user data to database (server action)
+- [ ] Role based signup (Vendor/Buyer/Admin)
+  - [ ] Vendor (everything now)
+  - [ ] Buyer (only a list of registered vendors)
+  - [ ] Admin (everthing in Vendor+Buyer)
 - [x] Deploy
 - [x] Suspense skeleton
 - [x] Placeholder for the rest of the pages
 
 ### Vanilla version
 - [x] Backend API endpoints & CRUD (Express)
-- [ ] Setup routing & navigation (React Router)
+- [x] Setup routing & navigation (React Router)
 - [ ] Build UI by reusing components
 - [ ] Connect to the backend

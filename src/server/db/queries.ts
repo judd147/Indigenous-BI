@@ -12,9 +12,70 @@ import {
   topIBVendorSummary,
   topNonIBVendorSummary,
 } from "~/server/db/schema";
-import { count, sum, eq, sql, ne, and, desc } from "drizzle-orm";
+import { count, sum, eq, sql, ne, and, desc, type SQL } from "drizzle-orm";
 
-const cached = false; // toggle to change the data source
+export async function getProcurementCount(searchCondition?: SQL<unknown>) {
+  // Count total records with search condition
+  const countResult = await db
+    .select({ count: count() })
+    .from(procurement)
+    .where(searchCondition);
+
+  return countResult[0]?.count ?? 0;
+}
+
+export async function getProcurementData({
+  page,
+  limit,
+  searchCondition,
+  sort,
+  order,
+}: {
+  page: number;
+  limit: number;
+  searchCondition?: SQL<unknown>;
+  sort?: string;
+  order?: string;
+}) {
+  const offset = (page - 1) * limit;
+  const procurements = await db.query.procurement.findMany({
+    limit: limit,
+    offset: offset,
+    where: searchCondition,
+    orderBy: (procurement, { asc, desc }) => [
+      sort
+        ? order === "desc"
+          ? desc(procurement[sort as keyof typeof procurement])
+          : asc(procurement[sort as keyof typeof procurement])
+        : asc(procurement.id),
+    ],
+    with: {
+      solicitationProcedure: {
+        columns: {
+          procedure: true,
+        },
+      },
+      department: {
+        columns: {
+          name: true,
+        },
+      },
+      procurementStrategy: {
+        columns: {
+          strategy: true,
+        },
+      },
+      awardCriteria: {
+        columns: {
+          criteria: true,
+        },
+      },
+    },
+  });
+  return procurements;
+}
+
+const cached = false; // toggle to change the insight chart data source
 
 export async function getStrategySummary() {
   const data = cached
