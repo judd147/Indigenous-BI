@@ -30,11 +30,10 @@
   - [x] Refactor db queries & follow best practices
 - [x] Profile form
   - [x] Mockup UI from CCIB website
-  - [ ] Send user data to database
-  - [ ] Add auth
+  - [ ] Send user data to database (server action)
 - [x] Deploy
-- [ ] Suspense skeleton
-- [ ] Placeholder for the rest of the pages
+- [x] Suspense skeleton
+- [x] Placeholder for the rest of the pages
 
 ### Vanilla version
 - [x] Backend API endpoints & CRUD (Express)
