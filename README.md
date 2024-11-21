@@ -20,7 +20,7 @@
   - [x] Backend pagination
   - [x] Global search w debounce
   - [x] Backend sorting
-  - [ ] Backend filtering (category)
+  - [x] Backend faceted filtering
 - [x] Insight charts
   - [x] Make charts reusable
   - [x] Query results from db
@@ -31,10 +31,8 @@
 - [x] Profile form
   - [x] Mockup UI from CCIB website
   - [ ] Send user data to database (server action)
-- [ ] Role based signup (Vendor/Buyer/Admin)
-  - [ ] Vendor (everything now)
-  - [ ] Buyer (only a list of registered vendors)
-  - [ ] Admin (everthing in Vendor+Buyer)
+- [ ] Vendors
+  - [ ] Display a list of registered vendors
 - [x] Deploy
 - [x] Suspense skeleton
 - [x] Placeholder for the rest of the pages

@@ -12,7 +12,7 @@ import {
   topIBVendorSummary,
   topNonIBVendorSummary,
 } from "~/server/db/schema";
-import { count, sum, eq, sql, ne, and, desc, type SQL } from "drizzle-orm";
+import { count, sum, eq, sql, ne, and, desc, asc, type SQL } from "drizzle-orm";
 
 export async function getProcurementCount(searchCondition?: SQL<unknown>) {
   // Count total records with search condition
@@ -50,6 +50,11 @@ export async function getProcurementData({
         : asc(procurement.id),
     ],
     with: {
+      vendor: {
+        columns: {
+          isIB: true,
+        },
+      },
       solicitationProcedure: {
         columns: {
           procedure: true,
@@ -84,14 +89,14 @@ export async function getStrategySummary() {
         .select({
           category: procurementStrategy.strategy,
           count: count(),
-          sum: sum(procurement.contract_value).mapWith(
-            procurement.contract_value,
+          sum: sum(procurement.contractValue).mapWith(
+            procurement.contractValue,
           ),
         })
         .from(procurement)
         .innerJoin(
           procurementStrategy,
-          eq(procurement.procurement_strategy_id, procurementStrategy.id),
+          eq(procurement.procurementStrategyId, procurementStrategy.id),
         )
         .groupBy(procurementStrategy.strategy);
   return data;
@@ -102,20 +107,20 @@ export async function getOwnerSummary() {
     ? await db.select().from(ownerSummary)
     : await db
         .select({
-          category: sql<string>`CASE WHEN ${vendor.is_IB} THEN 'IB' ELSE 'non-IB' END`,
+          category: sql<string>`CASE WHEN ${vendor.isIB} THEN 'IB' ELSE 'non-IB' END`,
           count: count(),
-          sum: sum(procurement.contract_value).mapWith(
-            procurement.contract_value,
+          sum: sum(procurement.contractValue).mapWith(
+            procurement.contractValue,
           ),
         })
         .from(procurement)
-        .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
+        .innerJoin(vendor, eq(procurement.vendorName, vendor.vendorName))
         .innerJoin(
           procurementStrategy,
-          eq(procurement.procurement_strategy_id, procurementStrategy.id),
+          eq(procurement.procurementStrategyId, procurementStrategy.id),
         )
         .where(ne(procurementStrategy.strategy, "None"))
-        .groupBy(vendor.is_IB);
+        .groupBy(vendor.isIB);
   return data;
 }
 
@@ -124,14 +129,14 @@ export async function getIndustrySummary() {
     ? await db.select().from(industrySummary)
     : await db
         .select({
-          category: sql<string>`CASE WHEN ${procurement.is_Tech} THEN 'Tech' ELSE 'non-Tech' END`,
+          category: sql<string>`CASE WHEN ${procurement.isTech} THEN 'Tech' ELSE 'non-Tech' END`,
           count: count(),
-          sum: sum(procurement.contract_value).mapWith(
-            procurement.contract_value,
+          sum: sum(procurement.contractValue).mapWith(
+            procurement.contractValue,
           ),
         })
         .from(procurement)
-        .groupBy(procurement.is_Tech);
+        .groupBy(procurement.isTech);
   return data;
 }
 
@@ -141,21 +146,21 @@ export async function getStrategyIndustrySummary() {
     : await db
         .select({
           category: sql<string>`CASE WHEN ${procurementStrategy.strategy} = 'None' THEN 'None' ELSE 'PSIB/PSAB' END`,
-          Tech_count: count(sql`CASE WHEN ${procurement.is_Tech} THEN 1 END`),
+          Tech_count: count(sql`CASE WHEN ${procurement.isTech} THEN 1 END`),
           "non-Tech_count": count(
-            sql`CASE WHEN NOT ${procurement.is_Tech} THEN 1 END`,
+            sql`CASE WHEN NOT ${procurement.isTech} THEN 1 END`,
           ),
           Tech_sum: sum(
-            sql`CASE WHEN ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
-          ).mapWith(procurement.contract_value),
+            sql`CASE WHEN ${procurement.isTech} THEN ${procurement.contractValue} END`,
+          ).mapWith(procurement.contractValue),
           "non-Tech_sum": sum(
-            sql`CASE WHEN NOT ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
-          ).mapWith(procurement.contract_value),
+            sql`CASE WHEN NOT ${procurement.isTech} THEN ${procurement.contractValue} END`,
+          ).mapWith(procurement.contractValue),
         })
         .from(procurement)
         .innerJoin(
           procurementStrategy,
-          eq(procurement.procurement_strategy_id, procurementStrategy.id),
+          eq(procurement.procurementStrategyId, procurementStrategy.id),
         )
         .groupBy(
           sql<string>`CASE WHEN ${procurementStrategy.strategy} = 'None' THEN 'None' ELSE 'PSIB/PSAB' END`,
@@ -168,27 +173,27 @@ export async function getOwnerIndustrySummary() {
     ? await db.select().from(ownerIndustrySummary)
     : await db
         .select({
-          category: sql<string>`CASE WHEN ${vendor.is_IB} THEN 'IB' ELSE 'non-IB' END`,
-          Tech_count: count(sql`CASE WHEN ${procurement.is_Tech} THEN 1 END`),
+          category: sql<string>`CASE WHEN ${vendor.isIB} THEN 'IB' ELSE 'non-IB' END`,
+          Tech_count: count(sql`CASE WHEN ${procurement.isTech} THEN 1 END`),
           "non-Tech_count": count(
-            sql`CASE WHEN NOT ${procurement.is_Tech} THEN 1 END`,
+            sql`CASE WHEN NOT ${procurement.isTech} THEN 1 END`,
           ),
           Tech_sum: sum(
-            sql`CASE WHEN ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
-          ).mapWith(procurement.contract_value),
+            sql`CASE WHEN ${procurement.isTech} THEN ${procurement.contractValue} END`,
+          ).mapWith(procurement.contractValue),
           "non-Tech_sum": sum(
-            sql`CASE WHEN NOT ${procurement.is_Tech} THEN ${procurement.contract_value} END`,
-          ).mapWith(procurement.contract_value),
+            sql`CASE WHEN NOT ${procurement.isTech} THEN ${procurement.contractValue} END`,
+          ).mapWith(procurement.contractValue),
         })
         .from(procurement)
-        .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
+        .innerJoin(vendor, eq(procurement.vendorName, vendor.vendorName))
         .innerJoin(
           procurementStrategy,
-          eq(procurement.procurement_strategy_id, procurementStrategy.id),
+          eq(procurement.procurementStrategyId, procurementStrategy.id),
         )
         .where(ne(procurementStrategy.strategy, "None"))
         .groupBy(
-          sql<string>`CASE WHEN ${vendor.is_IB} THEN 'IB' ELSE 'non-IB' END`,
+          sql<string>`CASE WHEN ${vendor.isIB} THEN 'IB' ELSE 'non-IB' END`,
         );
   return data;
 }
@@ -198,24 +203,24 @@ export async function getTopIBVendorSummary() {
     ? await db.select().from(topIBVendorSummary)
     : await db
         .select({
-          category: vendor.vendor_name,
-          sum: sum(procurement.contract_value).mapWith(
-            procurement.contract_value,
+          category: vendor.vendorName,
+          sum: sum(procurement.contractValue).mapWith(
+            procurement.contractValue,
           ),
         })
         .from(procurement)
-        .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
+        .innerJoin(vendor, eq(procurement.vendorName, vendor.vendorName))
         .innerJoin(
           procurementStrategy,
-          eq(procurement.procurement_strategy_id, procurementStrategy.id),
+          eq(procurement.procurementStrategyId, procurementStrategy.id),
         )
         .where(
-          and(ne(procurementStrategy.strategy, "None"), eq(vendor.is_IB, true)),
+          and(ne(procurementStrategy.strategy, "None"), eq(vendor.isIB, true)),
         )
-        .groupBy(vendor.vendor_name)
+        .groupBy(vendor.vendorName)
         .orderBy(
           desc(
-            sum(procurement.contract_value).mapWith(procurement.contract_value),
+            sum(procurement.contractValue).mapWith(procurement.contractValue),
           ),
         )
         .limit(10);
@@ -227,27 +232,27 @@ export async function getTopNonIBVendorSummary() {
     ? await db.select().from(topNonIBVendorSummary)
     : await db
         .select({
-          category: vendor.vendor_name,
-          sum: sum(procurement.contract_value).mapWith(
-            procurement.contract_value,
+          category: vendor.vendorName,
+          sum: sum(procurement.contractValue).mapWith(
+            procurement.contractValue,
           ),
         })
         .from(procurement)
-        .innerJoin(vendor, eq(procurement.vendor_name, vendor.vendor_name))
+        .innerJoin(vendor, eq(procurement.vendorName, vendor.vendorName))
         .innerJoin(
           procurementStrategy,
-          eq(procurement.procurement_strategy_id, procurementStrategy.id),
+          eq(procurement.procurementStrategyId, procurementStrategy.id),
         )
         .where(
           and(
             ne(procurementStrategy.strategy, "None"),
-            eq(vendor.is_IB, false),
+            eq(vendor.isIB, false),
           ),
         )
-        .groupBy(vendor.vendor_name)
+        .groupBy(vendor.vendorName)
         .orderBy(
           desc(
-            sum(procurement.contract_value).mapWith(procurement.contract_value),
+            sum(procurement.contractValue).mapWith(procurement.contractValue),
           ),
         )
         .limit(10);

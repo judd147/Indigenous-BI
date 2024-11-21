@@ -9,6 +9,7 @@ interface PageProps {
     query?: string;
     sort?: string;
     order?: string;
+    commodityType?: string;
   }>;
 }
 
@@ -19,6 +20,7 @@ export default async function ProcurementPage({ searchParams }: PageProps) {
   const query = params?.query?.trim();
   const sort = params?.sort;
   const order = params?.order;
+  const commodityType = params?.commodityType;
 
   return (
     <div className="container px-8 py-16">
@@ -31,6 +33,7 @@ export default async function ProcurementPage({ searchParams }: PageProps) {
             query={query}
             sort={sort}
             order={order}
+            commodityType={commodityType}
           />
         </Suspense>
       </div>
