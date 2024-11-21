@@ -12,7 +12,7 @@ import {
   topIBVendorSummary,
   topNonIBVendorSummary,
 } from "~/server/db/schema";
-import { count, sum, eq, sql, ne, and, desc, asc, type SQL } from "drizzle-orm";
+import { count, sum, eq, sql, ne, and, desc, type SQL } from "drizzle-orm";
 
 export async function getProcurementCount(searchCondition?: SQL<unknown>) {
   // Count total records with search condition

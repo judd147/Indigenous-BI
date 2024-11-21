@@ -8,8 +8,6 @@ import {
   type VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -146,16 +144,10 @@ export function DataTable<TData>({
     },
   });
 
-  const isFiltered = table.getState().columnFilters.length > 0;
-
-  const commodities = [
-    { label: "Good", value: "Good", icon: ContainerIcon },
-    { label: "Service", value: "Service", icon: HandHelping },
-    { label: "Construction", value: "Construction", icon: Construction },
-  ];
-
   const handleResetFilters = () => {
     const params = new URLSearchParams();
+    const currentQuery = searchParams.get("query");
+    if (currentQuery) params.set("query", currentQuery);
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -174,6 +166,13 @@ export function DataTable<TData>({
     params.set("page", "1"); // Reset page
     replace(`${pathname}?${params.toString()}`);
   };
+
+  const isFiltered = table.getState().columnFilters.length > 0;
+  const commodities = [
+    { label: "Good", value: "Good", icon: ContainerIcon },
+    { label: "Service", value: "Service", icon: HandHelping },
+    { label: "Construction", value: "Construction", icon: Construction },
+  ];
 
   return (
     <div>

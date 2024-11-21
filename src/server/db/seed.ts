@@ -63,8 +63,8 @@ const seed = async () => {
   for (const record of records.slice(index)) {
     await db
     .insert(vendor)
-    .values({ vendor_name: record.vendor_name, is_IB: record.is_IB })
-    .onConflictDoNothing({ target: vendor.vendor_name });
+    .values({ vendorName: record.vendor_name, isIB: record.is_IB })
+    .onConflictDoNothing({ target: vendor.vendorName });
     
     await db
       .insert(solicitationProcedure)
@@ -114,17 +114,17 @@ const seed = async () => {
     }
     await db.insert(procurement).values({
       id: index,
-      vendor_name: record.vendor_name,
+      vendorName: record.vendor_name,
       date: record.contract_date,
-      economic_object_code: record.economic_object_code,
+      economicObjectCode: record.economic_object_code,
       description: record.description_eng,
-      contract_value: record.contract_value,
-      commodity_type: record.commodity_type_en,
-      solicitation_procedure_id: procedureFK[0].id,
-      department_id: departmentFK[0].id,
-      procurement_strategy_id: strategyFK[0].id,
-      award_criteria_id: awardCriteriaFK[0].id,
-      is_Tech: record.is_Tech,
+      contractValue: record.contract_value,
+      commodityType: record.commodity_type_en,
+      solicitationProcedureId: procedureFK[0].id,
+      departmentId: departmentFK[0].id,
+      procurementStrategyId: strategyFK[0].id,
+      awardCriteriaId: awardCriteriaFK[0].id,
+      isTech: record.is_Tech,
     });
     index++;
     if (index % 2000 === 0) {
