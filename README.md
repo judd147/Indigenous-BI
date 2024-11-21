@@ -5,7 +5,7 @@
 - [x] Sidebar and navigation
   - [x] Sidebar
   - [x] Active link
-  - [ ] Use shadcn sidebar
+  - 🚧 Use shadcn sidebar
 - [x] Scaffold basic UI
 - [x] Set up a real database
   - [x] Create tables
@@ -30,10 +30,10 @@
   - [x] Refactor db queries & follow best practices
 - [x] Profile form
   - [x] Mockup UI from CCIB website
-  - [ ] Create/Edit profile form
-  - [ ] Send user data to database (server action)
+  - 🚧 Create/Edit profile form
+  - 🚧 Send user data to database (server action)
 - [ ] Vendors
-  - [ ] Display a list of registered vendors
+  - 🚧 Display a list of registered vendors
 - [x] Deploy
 - [x] Suspense skeleton
 - [x] Placeholder for the rest of the pages

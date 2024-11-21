@@ -44,7 +44,7 @@ export const columns: ColumnDef<Procurement>[] = [
   },
   {
     accessorKey: "vendor.isIB",
-    header: "is_IB",
+    header: "is IB",
   },
   {
     accessorKey: "date",
