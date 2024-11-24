@@ -37,7 +37,7 @@ export function StackedBarChart({ chartData, chartConfig, chartTitle, chartDescr
         <CardDescription>{chartDescription}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 justify-center items-center">
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
+        <ChartContainer config={chartConfig} className="mx-auto"  style={{ width: "250px", height: "250px"}}>
           <BarChart accessibilityLayer data={chartData} width={250} height={250}>
             <CartesianGrid vertical={false} />
             <XAxis
