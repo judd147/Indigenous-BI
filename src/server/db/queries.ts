@@ -80,7 +80,7 @@ export async function getProcurementData({
   return procurements;
 }
 
-const cached = false; // toggle to change the insight chart data source
+const cached = true; // toggle to change the insight chart data source
 
 export async function getStrategySummary() {
   const data = cached

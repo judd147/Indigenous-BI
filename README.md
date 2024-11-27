@@ -41,5 +41,5 @@
 ### Vanilla version
 - [x] Backend API endpoints & CRUD (Express)
 - [x] Setup routing & navigation (React Router)
-- [ ] Build UI by reusing components
-- [ ] Connect to the backend
+- [x] Build UI by reusing components
+- [x] Connect to the backend
