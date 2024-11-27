@@ -14,6 +14,8 @@ import {
 } from "~/server/db/schema";
 import { count, sum, eq, sql, ne, and, desc, type SQL } from "drizzle-orm";
 
+const cached = true; // toggle to change the insight chart data source
+
 export async function getProcurementCount(searchCondition?: SQL<unknown>) {
   // Count total records with search condition
   const countResult = await db
@@ -79,8 +81,6 @@ export async function getProcurementData({
   });
   return procurements;
 }
-
-const cached = true; // toggle to change the insight chart data source
 
 export async function getStrategySummary() {
   const data = cached
