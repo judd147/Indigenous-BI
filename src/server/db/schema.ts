@@ -10,6 +10,11 @@ import { relations } from "drizzle-orm";
 
 export const createTable = pgTableCreator((name) => `indigenous-bi_${name}`);
 
+export const user = createTable('user', {
+  email: varchar('email', { length: 256 }).primaryKey(),
+  password: varchar('password', { length: 256 }).notNull(),
+});
+
 export const vendor = createTable('vendor', {
   vendorName: varchar('vendor_name', { length: 256 }).primaryKey(),
   isIB: boolean('is_IB').default(false),
