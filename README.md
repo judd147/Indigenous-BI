@@ -30,9 +30,8 @@
   - [x] Refactor db queries & follow best practices
 - [x] Profile form
   - [x] Mockup UI from CCIB website
-  - [ ] Add authentication
-  - 🚧 Create/Edit profile form
-  - 🚧 Send user data to database (server action)
+  - [x] Add authentication
+  - [ ] Send profile data to database (server action)
 - [ ] Vendors
   - 🚧 Display a list of registered vendors
 - [x] Deploy
