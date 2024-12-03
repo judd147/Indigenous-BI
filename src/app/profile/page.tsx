@@ -3,7 +3,7 @@ import { LogOut } from "lucide-react";
 import { signOut } from "~/auth";
 import { Button } from "~/components/ui/button";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
   return (
     <div className="container px-8 py-16">
       <div className="flex flex-row justify-between">

@@ -13,6 +13,19 @@ export const createTable = pgTableCreator((name) => `indigenous-bi_${name}`);
 export const user = createTable('user', {
   email: varchar('email', { length: 256 }).primaryKey(),
   password: varchar('password', { length: 256 }).notNull(),
+  companyName: varchar('company_name', { length: 256 }),
+  address: varchar('address', { length: 256 }),
+  city: varchar('city', { length: 256 }),
+  province: varchar('province', { length: 256 }),
+  postalCode: varchar('postal_code', { length: 256 }),
+  phone: varchar('phone', { length: 256 }),
+  website: varchar('website', { length: 256 }),
+  businessType: varchar('business_type', { length: 256 }),
+  linkedin: varchar('linkedin', { length: 256 }),
+  facebook: varchar('facebook', { length: 256 }),
+  twitter: varchar('twitter', { length: 256 }),
+  instagram: varchar('instagram', { length: 256 }),
+  youtube: varchar('youtube', { length: 256 }),
 });
 
 export const vendor = createTable('vendor', {

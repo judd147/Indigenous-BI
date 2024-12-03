@@ -2,6 +2,11 @@
  
 import { signIn } from '~/auth';
 import { AuthError } from 'next-auth';
+import { type formSchema } from "~/app/profile/profile-form";
+import { type z } from "zod";
+import { db } from "~/server/db/index";
+import { user } from "~/server/db/schema";
+import { eq } from 'drizzle-orm';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -20,4 +25,8 @@ export async function authenticate(
     }
     throw error;
   }
+}
+
+export async function updateProfile(values: z.infer<typeof formSchema>) {
+  console.log(values);
 }
