@@ -1,8 +1,8 @@
 import "~/styles/globals.css";
-
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import SideNav from "./side-nav";
+import { ClientProvider } from "~/client-provider";
 
 export const metadata: Metadata = {
   title: "Indigenous Business Intelligence",
@@ -16,11 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        {/* grid layout of 2 columns, the left column is the sidebar of width 16rem, and the main content will take up the remaining space */}
-        <div className="grid h-full grid-cols-[16rem_1fr]">
-          <SideNav />
-          <main className="overflow-y-auto">{children}</main>
-        </div>
+        <ClientProvider>
+          <div className="grid h-full grid-cols-[16rem_1fr]">
+            <SideNav />
+            <main className="overflow-y-auto">{children}</main>
+          </div>
+        </ClientProvider>
       </body>
     </html>
   );

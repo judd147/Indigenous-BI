@@ -21,9 +21,11 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { updateProfile } from "~/server/db/actions";
+import { useUser } from "~/UserContext";
 
 // Define schema for form validation
 export const formSchema = z.object({
+  email: z.string().email(),
   companyName: z
     .string()
     .min(2, { message: "Company name must be at least 2 characters." }),
@@ -42,9 +44,12 @@ export const formSchema = z.object({
 });
 
 export function ProfileForm() {
+  const { user } = useUser();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      email: user.email,
       companyName: "",
       address: "",
       city: "",
@@ -65,7 +70,25 @@ export function ProfileForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(updateProfile)} className="space-y-8">
         <h1 className="text-2xl font-bold"></h1>
-        
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email *</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  readOnly
+                  disabled
+                  className="bg-slate-50"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {/* Username Field */}
         <FormField
           control={form.control}
