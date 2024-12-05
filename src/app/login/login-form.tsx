@@ -9,25 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { authenticate } from "~/server/db/actions";
-import { useUser, UserProvider } from "~/UserContext";
 
 export default function LoginForm() {
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
     undefined,
   );
-  const [email, setEmail] = useState("");
-  const { setUser } = useUser();
-
-  const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    setUser({ email: e.target.value });
-  };
-
   return (
-    <UserProvider>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Sign In</CardTitle>
@@ -50,8 +40,6 @@ export default function LoginForm() {
                 type="email"
                 name="email"
                 placeholder="Enter your email address"
-                value={email}
-                onChange={inputHandler}
                 required
               />
               <AtSign className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
@@ -96,6 +84,5 @@ export default function LoginForm() {
           </form>
         </CardContent>
       </Card>
-    </UserProvider>
   );
 }

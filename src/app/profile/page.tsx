@@ -1,9 +1,10 @@
 import { ProfileForm } from "./profile-form";
 import { LogOut } from "lucide-react";
-import { signOut } from "~/auth";
+import { auth, signOut } from "~/auth";
 import { Button } from "~/components/ui/button";
 
 export default async function ProfilePage() {
+  const session = await auth();
   return (
     <div className="container px-8 py-16">
       <div className="flex flex-row justify-between">
@@ -20,7 +21,7 @@ export default async function ProfilePage() {
           </Button>
         </form>
       </div>
-      <ProfileForm />
+      <ProfileForm session={session}/>
     </div>
   );
 }

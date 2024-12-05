@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { updateProfile } from "~/server/db/actions";
-import { useUser } from "~/UserContext";
+import { type Session } from "next-auth"
 
 // Define schema for form validation
 export const formSchema = z.object({
@@ -43,13 +43,11 @@ export const formSchema = z.object({
   youtube: z.string().optional(),
 });
 
-export function ProfileForm() {
-  const { user } = useUser();
-
+export function ProfileForm({session}: {session: Session | null}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: user.email,
+      email: session?.user?.email ?? "",
       companyName: "",
       address: "",
       city: "",

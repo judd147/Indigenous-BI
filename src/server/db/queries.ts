@@ -11,8 +11,11 @@ import {
   ownerIndustrySummary,
   topIBVendorSummary,
   topNonIBVendorSummary,
+  user
 } from "~/server/db/schema";
 import { count, sum, eq, sql, ne, and, desc, type SQL } from "drizzle-orm";
+import { type formSchema } from "~/app/profile/profile-form";
+import { type z } from "zod";
 
 const cached = true; // toggle to change the insight chart data source
 
@@ -257,4 +260,13 @@ export async function getTopNonIBVendorSummary() {
         )
         .limit(10);
   return data;
+}
+
+export async function updateUser(values: z.infer<typeof formSchema>) {
+  await db.update(user).set(values).where(eq(user.email, values.email));
+}
+
+export async function getUser(email: string) {
+  const currentUser = await db.select().from(user).where(eq(user.email, email));
+  return currentUser[0];
 }

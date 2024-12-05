@@ -4,6 +4,8 @@ import { signIn } from '~/auth';
 import { AuthError } from 'next-auth';
 import { type formSchema } from "~/app/profile/profile-form";
 import { type z } from "zod";
+import { updateUser } from "./queries";
+import { revalidatePath } from 'next/cache';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -25,5 +27,6 @@ export async function authenticate(
 }
 
 export async function updateProfile(values: z.infer<typeof formSchema>) {
-  console.log(values);
+  await updateUser(values);
+  revalidatePath('/profile');
 }
