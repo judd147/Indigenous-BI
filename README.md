@@ -33,8 +33,8 @@
   - [x] Add authentication
   - [x] Send profile data to database
   - [x] Add sonnet after updating
-- [ ] Vendors
-  - 🚧 Display a list of registered vendors
+- [x] Vendors
+  - [x] Display a list of registered vendors
 - [x] Deploy
 - [x] Suspense skeleton
 - [x] Placeholder for the rest of the pages

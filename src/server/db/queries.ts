@@ -271,3 +271,8 @@ export async function getUser(email: string | null | undefined) {
   const currentUser = await db.select().from(user).where(eq(user.email, email));
   return currentUser[0];
 }
+
+export async function getAllUsers() {
+  const users = await db.query.user.findMany();
+  return users;
+}

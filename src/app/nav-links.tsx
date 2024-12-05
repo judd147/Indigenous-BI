@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import { Users } from "lucide-react"
 
 export default function NavLinks() {
   const pathname = usePathname(); // Get the current pathname to determine which link is active
@@ -163,6 +164,25 @@ export default function NavLinks() {
           </svg>
 
           <span className="ms-3 flex-1 whitespace-nowrap">Insight</span>
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/vendors"
+          className={clsx(
+            "group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700",
+            {
+              "bg-gray-200 dark:bg-gray-700": pathname === "/vendors",
+            },
+          )}
+        >
+          <Users className={clsx(
+              "h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white",
+              {
+                "text-gray-900 dark:text-white": pathname === "/vendors",
+              },
+            )}/>
+          <span className="ms-3 flex-1 whitespace-nowrap">Vendors</span>
         </Link>
       </li>
       <li>

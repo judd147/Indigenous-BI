@@ -101,7 +101,7 @@ export function ProfileForm({
           second: "numeric",
         }),
       });
-    } catch (error) {
+    } catch {
       toast("Failed to update profile", {
         description: "Error updating profile",
       });
