@@ -266,7 +266,8 @@ export async function updateUser(values: z.infer<typeof formSchema>) {
   await db.update(user).set(values).where(eq(user.email, values.email));
 }
 
-export async function getUser(email: string) {
+export async function getUser(email: string | null | undefined) {
+  if (!email) return null;
   const currentUser = await db.select().from(user).where(eq(user.email, email));
   return currentUser[0];
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -20,8 +20,26 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+import { toast } from "sonner";
 import { updateProfile } from "~/server/db/actions";
-import { type Session } from "next-auth"
+import { type Session } from "next-auth";
+
+export type User = {
+  email: string;
+  companyName?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  phone?: string;
+  website?: string;
+  businessType?: string;
+  linkedin?: string;
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  youtube?: string;
+};
 
 // Define schema for form validation
 export const formSchema = z.object({
@@ -43,30 +61,59 @@ export const formSchema = z.object({
   youtube: z.string().optional(),
 });
 
-export function ProfileForm({session}: {session: Session | null}) {
+export function ProfileForm({
+  session,
+  user,
+}: {
+  session: Session | null;
+  user: User | null | undefined;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: session?.user?.email ?? "",
-      companyName: "",
-      address: "",
-      city: "",
-      province: "",
-      postalCode: "",
-      phone: "",
-      website: "",
-      businessType: "",
-      linkedin: "",
-      facebook: "",
-      twitter: "",
-      instagram: "",
-      youtube: "",
+      companyName: user?.companyName ?? "",
+      address: user?.address ?? "",
+      city: user?.city ?? "",
+      province: user?.province ?? "",
+      postalCode: user?.postalCode ?? "",
+      phone: user?.phone ?? "",
+      website: user?.website ?? "",
+      businessType: user?.businessType ?? "",
+      linkedin: user?.linkedin ?? "",
+      facebook: user?.facebook ?? "",
+      twitter: user?.twitter ?? "",
+      instagram: user?.instagram ?? "",
+      youtube: user?.youtube ?? "",
     },
   });
 
+  const onUpdate = async (values: z.infer<typeof formSchema>) => {
+    try {
+      await updateProfile(values);
+      toast("Profile updated successfully!", {
+        description: new Date().toLocaleDateString("en-CA", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+        }),
+      });
+    } catch (error) {
+      toast("Failed to update profile", {
+        description: "Error updating profile",
+      });
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(updateProfile)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit((values) => onUpdate(values))}
+        className="space-y-8"
+      >
         <h1 className="text-2xl font-bold"></h1>
 
         <FormField
@@ -76,12 +123,7 @@ export function ProfileForm({session}: {session: Session | null}) {
             <FormItem>
               <FormLabel>Email *</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  readOnly
-                  disabled
-                  className="bg-slate-50"
-                />
+                <Input {...field} readOnly disabled className="bg-slate-50" />
               </FormControl>
               <FormMessage />
             </FormItem>

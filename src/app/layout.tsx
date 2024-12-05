@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import SideNav from "./side-nav";
+import { Toaster } from "~/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "Indigenous Business Intelligence",
@@ -18,6 +19,7 @@ export default function RootLayout({
         <div className="grid h-full grid-cols-[16rem_1fr]">
           <SideNav />
           <main className="overflow-y-auto">{children}</main>
+          <Toaster />
         </div>
       </body>
     </html>

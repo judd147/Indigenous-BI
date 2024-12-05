@@ -31,7 +31,8 @@
 - [x] Profile form
   - [x] Mockup UI from CCIB website
   - [x] Add authentication
-  - [ ] Send profile data to database
+  - [x] Send profile data to database
+  - [x] Add sonnet after updating
 - [ ] Vendors
   - 🚧 Display a list of registered vendors
 - [x] Deploy
