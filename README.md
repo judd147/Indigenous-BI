@@ -21,8 +21,9 @@ This version is built with the following technologies mainly from the [T3 Stack]
 * [Drizzle](https://orm.drizzle.team)
 * [Postgres](https://www.postgresql.org/)
 * [TanStack Query](https://tanstack.com/query/latest)
-* [Tanstack Table](https://tanstack.com/table/latest)
+* [TanStack Table](https://tanstack.com/table/latest)
 * [React Hook Form](https://react-hook-form.com/)
+* [Zod](https://zod.dev/)
 * [NextAuth.js](https://next-auth.js.org/)
 * [Vercel](https://vercel.com/)
 
